@@ -70,6 +70,90 @@
     "text": "We are a multidisciplinary team of researchers, clinicians, biostatisticians, and data scientists dedicated to advancing the early detection of Pulmonary Embolism through innovative AI-driven solutions.\n\n\n\n\n\n\nPhoto of Dr. Alice Wonderland\n\n\n\n\n\n\nDr. Wonderland is a leading researcher in medical image analysis with over 15 years of experience. Her work focuses on applying machine learning techniques to improve diagnostic accuracy. She leads the overall project strategy for PEPCI.\n\n\n\nEmail Profile\n\n\n\n\n\n\n\n\nPhoto of Bob The Builder\n\n\n\n\n\n\nBob is a PhD student specializing in deep learning for healthcare. He is the lead developer for the PEPCI model implementations and this web platform. His research focuses on Vision Transformers for medical imaging.\n\n\n\nEmail GitHub\n\n\n\n\n\n\n\n\nPhoto of Carol Danvers\n\n\n\n\n\n\nCarol is an expert in clinical data curation and statistical analysis. She plays a key role in managing the EKG dataset and performing multimodal data integration for the PEPCI project.\n\n\n\nEmail Profile\n\n\n\n\n\n\n\n[List any key collaborators or institutions]\n[Another collaborator]\n\n\n\n\nThis project is generously funded by: - [Funding Body Name(s) and Grant Number(s), if applicable]\nWe are grateful for the support and resources provided by [mention institutions or departments]. We also thank the patients whose anonymized data contributes to this vital research."
   },
   {
+    "objectID": "LitReview.html#somani-et-al.-2022-paper-mount-sinai",
+    "href": "LitReview.html#somani-et-al.-2022-paper-mount-sinai",
+    "title": "Literature Review",
+    "section": "Somani et al. (2022) Paper (Mount Sinai)",
+    "text": "Somani et al. (2022) Paper (Mount Sinai)\nDevelopment of a machine learning model using electrocardiogram signals to improve acute PE screening.\n\n\nThe CTPA Overuse Problem\n\nPulmonary emboli (PE) = blood clots in lung arteries\nPotentially life-threatening condition (2-9% of out-of-hospital cardiac arrests)\nCTPA required for definitive diagnosis but not always immediately available\nOnly 3-10% of ordered CTPAs are positive for PE\nOveruse exposes patients to unnecessary radiation\n\n\n\nStudy Design\n\nLarge-scale retrospective cohort study at Mount Sinai Health System\nNovel approach: Combining ECG waveform analysis with clinical data\nStudy Population & Data\n\n21,183 patients who underwent CTPA evaluation\n23,793 CTPAs (10.0% PE-positive)\n320,746 ECGs linked to clinical information"
+  },
+  {
+    "objectID": "LitReview.html#ml-models",
+    "href": "LitReview.html#ml-models",
+    "title": "Literature Review",
+    "section": "ML Models",
+    "text": "ML Models\n\n3 Approaches\n\nECG Model: Convolutional neural network (CNN)\n\nAnalyzes raw waveform data from 8 ECG leads\n12 residual blocks + fully-connected output layer\n\nEHR data Model: XGBoost algorithm\n\nUses clinical data (demographics, comorbidities, vitals, labs)\nIncludes ECG morphology parameters (PR interval, QTc, etc.)\n\nFusion Model:\n\nCombines ECG waveform embeddings with clinical EHR data\nUses principal component analysis to reduce dimensionality\nBuilt on XGBoost framework\n\n\n\n\nModel Performance\n\nFusion model significantly outperformed others:\n\nFusion model: AUC 0.81 ± 0.01\nEHR model: AUC 0.65 ± 0.01\nECG model: AUC 0.59 ± 0.01\n\nFusion model benchmarked against standard scoring systems:\n\nWells’ Criteria (AUC 0.54); Revised Geneva Score (AUC 0.52)\nPERC (AUC 0.50); 4PEPS (AUC 0.58)\n\nFusion model achieved higher specificity (0.18) vs. clinical scores (0.00-0.05)\nBetter performance maintained even without D-dimer input"
+  },
+  {
+    "objectID": "LitReview.html#workflow-of-somani-et-al.",
+    "href": "LitReview.html#workflow-of-somani-et-al.",
+    "title": "Literature Review",
+    "section": "Workflow of Somani et al.",
+    "text": "Workflow of Somani et al.\n\nWorkflowCase Study: 53-year-old male with saddle PE. Clinical presentation:\n\nChest pain, fatigue, dyspnea on exertion Tachycardia (HR 123) but no hypoxia, Elevated D-dimer (13.7 mg/mL).\nLow scores on clinical assessment tools: Wells’ criteria: 1.5; Geneva score: 5; PERC: 2; 4PEPS: 1.\nAll AI models correctly identified the subject as high risk!"
+  },
+  {
+    "objectID": "LitReview.html#silva-et-al.-2023-paper-portugal",
+    "href": "LitReview.html#silva-et-al.-2023-paper-portugal",
+    "title": "Literature Review",
+    "section": "Silva et al. (2023) Paper (Portugal)",
+    "text": "Silva et al. (2023) Paper (Portugal)\nArtificial intelligence-based diagnosis of acute pulmonary embolism: Development of a machine learning model using 12-lead electrocardiogram.\n\n\nCurrent Approach Limitations:\n\nClinical prediction rules + D-dimer tests:\n\nWells score, Geneva score, YEARS algorithm, PEGeD algorithm\n\nHigh sensitivity (~90%) but poor specificity (12-30%)\nTraditional ECG features unreliable for PE detection\nRisk of unnecessary anticoagulation/thrombolysis\n\n\n\nStudy Design\n\n1,014 ECGs from emergency department patients\n\nAll underwent CTPA for suspected PE\n911 ECGs for model development (training)\n103 ECGs for validation (testing)\n\nGold standard: CTPA results\nCompared AI performance vs. standard clinical prediction rules"
+  },
+  {
+    "objectID": "LitReview.html#ai-model-and-results",
+    "href": "LitReview.html#ai-model-and-results",
+    "title": "Literature Review",
+    "section": "AI Model and Results",
+    "text": "AI Model and Results\n\n\nAI Model Architecture\n\nAttention-Enhanced Residual Network\nProcesses raw 12-lead ECG data (5000 samples/10 seconds)\nPre-processing: low-pass filter + Z-score normalization\nFocal loss function to address class imbalance\nSelf-multi-head attention mechanism for detailed pattern recognition\n\n\n\nKey Results\n\nAI-ECG model:\n\n100% specificity (95% CI: 94-100%)\n50% sensitivity (95% CI: 33-67%)\nAUC: 0.75 (95% CI: 0.66-0.82)\n\nTraditional clinical prediction rules:\n\n~90% sensitivity\n12-30% specificity\nAUC: 0.51-0.59 (near-random performance)"
+  },
+  {
+    "objectID": "LitReview.html#interesting-finding-ecg-vs-pe",
+    "href": "LitReview.html#interesting-finding-ecg-vs-pe",
+    "title": "Literature Review",
+    "section": "Interesting Finding: ECG vs PE",
+    "text": "Interesting Finding: ECG vs PE\n\nTraditional ECG features showed no statistical difference between patients with and without PE!\n\nSpecific patterns like tachycardia, right bundle branch block, S1Q3T3 pattern, and T-wave inversions appeared similarly in both groups\nEven the established Daniels’ ECG score showed no significant difference between PE and non-PE patients\n\nDespite this, the AI model achieved 100% specificity in detecting PE from the same ECG data, which suggests\n\nAI identified subtle, complex patterns that aren’t part of conventional medical knowledge.\n\nHypothesis: Could augmenting CXR with EKG have merit in predicting PE?"
+  },
+  {
+    "objectID": "LitReview.html#abstract-houghton-et-al.-2024-mayo-clinic",
+    "href": "LitReview.html#abstract-houghton-et-al.-2024-mayo-clinic",
+    "title": "Literature Review",
+    "section": "Abstract (Houghton et al., 2024, Mayo Clinic)",
+    "text": "Abstract (Houghton et al., 2024, Mayo Clinic)\nThe AI-Mayo PE (AIM PE) Study: Validation of an Artificial Intelligence Algorithm Using Electrocardiograms to Predict Pulmonary Emboli\n\n\nBackground: The PE Diagnosis Challenge\n\nCTPA required for definitive diagnosis but not always immediately available\nEspecially challenging in hemodynamically unstable patients\n\n\n\nCurrent Approach: Limitations\n\nExisting algorithms have only moderate accuracy\nGuidelines recommend formal scoring systems (Wells’ Score, PERC etc)\nReality: Many clinicians don’t consistently use them\nHeavy reliance on “clinical gestalt” (personal judgment)\nRisk of missed diagnoses or unnecessary testing"
+  },
+  {
+    "objectID": "LitReview.html#ai-ecg",
+    "href": "LitReview.html#ai-ecg",
+    "title": "Literature Review",
+    "section": "AI-ECG",
+    "text": "AI-ECG\n\n\nThe AI-ECG Approach\n\nUses routinely collected data (ECGs are standard for cardiac symptoms)\nKey Innovation: Combined with D-dimer testing → AUC improved to 0.93\n\n\n\nStudy Results\n\nValidation using 18,936 emergency department patients\nAI-ECG algorithm maintained AUC of 0.69\nThree risk categories identified:\n\nLow risk: 0.74% PE rate (99.3% NPV)\nElevated risk: 2.27% PE rate (97.7% NPV)\nHigh risk: 8.02% PE rate (92.0% NPV)\n\nCombined with D-dimer: AUC improved to 0.93\n\nD-dimer is a blood test that detects protein fragments present after a blood clot breaks down."
+  },
+  {
+    "objectID": "LitReview.html#comparison",
+    "href": "LitReview.html#comparison",
+    "title": "Literature Review",
+    "section": "Comparison",
+    "text": "Comparison\n\n\nSimilarities\n\nAll utilize ECG data as a core component\nAll outperform traditional clinical prediction rules\nAll aim to reduce unnecessary CTPA imaging\nAll suggest AI can detect ECG patterns invisible to human clinicians\n\n\n\nDifferences\n\nData Inputs:\n\nMayo: Primarily ECG data + D-dimer\nPortuguese: ECG data only\nMount Sinai: Most comprehensive (ECGs, demographics, EHR)\n\nModel Architecture:\n\nPortuguese: Attention-enhanced residual network\nMount Sinai: Multiple architectures (CNN, XGBoost)\n\nPerformance Focus:\n\nPortuguese: Maximized specificity (100%), Mediocre sensitivity (0.50)\nMount Sinai: Poor specificity (0.18) (although better than clinical scores)"
+  },
+  {
+    "objectID": "LitReview.html#why-add-cxr",
+    "href": "LitReview.html#why-add-cxr",
+    "title": "Literature Review",
+    "section": "Why add CXR?",
+    "text": "Why add CXR?\n\nCXRs widely available and less resource-intensive than CTPA.\nComplementary to EKG, routinely performed early in cardiopulmonary workups.\nMay show secondary PE signs (Westermark sign, Hampton’s hump). (Ask an expert!)\nAI/ML models excel at image analysis/pattern recognition.\n\nChallenges\n\nVariable CXR image quality (technique, positioning).\nMany other cardiopulmonary conditions could affect CXR appearance and introduce bias."
+  },
+  {
+    "objectID": "LitReview.html#questions",
+    "href": "LitReview.html#questions",
+    "title": "Literature Review",
+    "section": "Questions",
+    "text": "Questions\n\nWhat variables do we have in addition to the CXR and EKG images?\nDo we use the data directly or some engineered version (extract texture features/numeric values)? Or both?\nUnderstanding the timing of when these variables were collected?\n\nWhat information do we collect for each patient and how and in what stages?\nMIMIC data jitters the timestamps.\n\nWhy did they do the D-dimer test? Is it not a definitive test? Why not just build a model with EKG+D-Dimer?\nSuggestion:\n\nBuild models sequentially, first start with EHR, then EKG, then EKG+EHR, then augment CXR and so on.\nUnderstanding variable importance: what variables are important?"
+  },
+  {
+    "objectID": "LitReview.html#references",
+    "href": "LitReview.html#references",
+    "title": "Literature Review",
+    "section": "References",
+    "text": "References\n[1] Somani SS, et al. Development of a machine learning model using electrocardiogram signals to improve acute pulmonary embolism screening. European Heart Journal - Digital Health. 2022;3:56-66.\n[2] Valente Silva B, et al. Artificial intelligence-based diagnosis of acute pulmonary embolism: Development of a machine learning model using 12-lead electrocardiogram. Revista Portuguesa de Cardiologia. 2023;42(8):643-651.\n[3] Houghton DE, et al. The AI-Mayo PE Study: Validation of an Artificial Intelligence Algorithm Using Electrocardiograms to Predict Pulmonary Emboli. [2024]"
+  },
+  {
     "objectID": "data/cxr.html",
     "href": "data/cxr.html",
     "title": "CXR Data Description",
