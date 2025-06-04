@@ -1,40 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://awanafiaz.github.io/PEPCEI_site/tutorial/tutorial_CNN_scorcher.html</loc>
-    <lastmod>2025-06-03T02:47:03.484Z</lastmod>
+    <loc>https://awanafiaz.github.io/PEPCEI_site/tutorial/scorcher_tutorial_CNN.html</loc>
+    <lastmod>2025-06-04T17:12:33.443Z</lastmod>
   </url>
   <url>
-    <loc>https://awanafiaz.github.io/PEPCEI_site/results/cnn.html</loc>
-    <lastmod>2025-05-18T18:00:00.926Z</lastmod>
+    <loc>https://awanafiaz.github.io/PEPCEI_site/tutorial/old_tutorial_CNN_scorcher.html</loc>
+    <lastmod>2025-06-04T07:45:28.717Z</lastmod>
   </url>
   <url>
-    <loc>https://awanafiaz.github.io/PEPCEI_site/project-description.html</loc>
-    <lastmod>2025-05-18T17:57:37.936Z</lastmod>
-  </url>
-  <url>
-    <loc>https://awanafiaz.github.io/PEPCEI_site/data/ekg.html</loc>
-    <lastmod>2025-05-18T17:59:29.540Z</lastmod>
-  </url>
-  <url>
-    <loc>https://awanafiaz.github.io/PEPCEI_site/about.html</loc>
-    <lastmod>2025-06-04T01:18:31.482Z</lastmod>
-  </url>
-  <url>
-    <loc>https://awanafiaz.github.io/PEPCEI_site/LitReview.html</loc>
-    <lastmod>2025-06-04T02:24:54.405Z</lastmod>
-  </url>
-  <url>
-    <loc>https://awanafiaz.github.io/PEPCEI_site/data/cxr.html</loc>
-    <lastmod>2025-05-18T17:59:01.549Z</lastmod>
+    <loc>https://awanafiaz.github.io/PEPCEI_site/results/PEPCI_CXR_only_CNN.html</loc>
+    <lastmod>2025-06-04T15:43:30.600Z</lastmod>
   </url>
   <url>
     <loc>https://awanafiaz.github.io/PEPCEI_site/index.html</loc>
     <lastmod>2025-06-04T01:18:00.559Z</lastmod>
   </url>
   <url>
-    <loc>https://awanafiaz.github.io/PEPCEI_site/results/PEPCI_CXR_only_CNN.html</loc>
-    <lastmod>2025-06-04T01:09:20.477Z</lastmod>
+    <loc>https://awanafiaz.github.io/PEPCEI_site/data/cxr.html</loc>
+    <lastmod>2025-05-18T17:59:01.549Z</lastmod>
+  </url>
+  <url>
+    <loc>https://awanafiaz.github.io/PEPCEI_site/LitReview.html</loc>
+    <lastmod>2025-06-04T02:24:54.405Z</lastmod>
+  </url>
+  <url>
+    <loc>https://awanafiaz.github.io/PEPCEI_site/about.html</loc>
+    <lastmod>2025-06-04T01:18:31.482Z</lastmod>
+  </url>
+  <url>
+    <loc>https://awanafiaz.github.io/PEPCEI_site/data/ekg.html</loc>
+    <lastmod>2025-05-18T17:59:29.540Z</lastmod>
+  </url>
+  <url>
+    <loc>https://awanafiaz.github.io/PEPCEI_site/project-description.html</loc>
+    <lastmod>2025-05-18T17:57:37.936Z</lastmod>
+  </url>
+  <url>
+    <loc>https://awanafiaz.github.io/PEPCEI_site/results/cnn.html</loc>
+    <lastmod>2025-05-18T18:00:00.926Z</lastmod>
   </url>
   <url>
     <loc>https://awanafiaz.github.io/PEPCEI_site/tutorial/scorcher.html</loc>

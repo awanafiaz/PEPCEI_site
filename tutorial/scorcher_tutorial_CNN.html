@@ -1,0 +1,1351 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.42">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Awan Afiaz">
+
+<title>Finding Cats on the Internet with CNNs and scorcher in R – PEPCEI</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../static/pepcei.png" rel="icon" type="image/png">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-d1b12f2568ecbe55642fee6aa00bd082.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../styles.css">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="../index.html" class="navbar-brand navbar-brand-logo">
+    <img src="../static/pepcei.png" alt="PEPCEI Logo" class="navbar-logo">
+    </a>
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">PEPCEI Project</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../index.html"> <i class="bi bi-house-fill" role="img">
+</i> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../project-description.html"> <i class="bi bi-info-circle-fill" role="img">
+</i> 
+<span class="menu-text">Project Info</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../LitReview.html"> <i class="bi bi-search-heart-fill" role="img">
+</i> 
+<span class="menu-text">Lit Review</span></a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-data-descriptions" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+      <i class="bi bi-database-fill" role="img">
+</i> 
+ <span class="menu-text">Data Descriptions</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-data-descriptions">    
+        <li>
+    <a class="dropdown-item" href="../data/cxr.html">
+ <span class="dropdown-text">CXR Data</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../data/ekg.html">
+ <span class="dropdown-text">EKG Data</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-results" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+      <i class="bi bi-graph-up-arrow" role="img">
+</i> 
+ <span class="menu-text">Results</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-results">    
+        <li>
+    <a class="dropdown-item" href="../results/PEPCI_CXR_only_CNN.html">
+ <span class="dropdown-text">CNN with CXR only</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link active" href="../tutorial/scorcher_tutorial_CNN.html" aria-current="page"> <i class="bi bi-hand-index" role="img">
+</i> 
+<span class="menu-text">Purrfect scorcher tutorial</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../about.html"> <i class="bi bi-cup-hot-fill" role="img">
+</i> 
+<span class="menu-text">About Us</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#part-1-the-building-blocks---understanding-how-computers-see" id="toc-part-1-the-building-blocks---understanding-how-computers-see" class="nav-link active" data-scroll-target="#part-1-the-building-blocks---understanding-how-computers-see"><strong>Part 1: The Building Blocks - Understanding How Computers “See”</strong></a>
+  <ul class="collapse">
+  <li><a href="#whats-in-a-picture-pixels" id="toc-whats-in-a-picture-pixels" class="nav-link" data-scroll-target="#whats-in-a-picture-pixels"><strong>What’s in a Picture? Pixels!</strong></a></li>
+  <li><a href="#the-core-idea-convolutions-with-some-math" id="toc-the-core-idea-convolutions-with-some-math" class="nav-link" data-scroll-target="#the-core-idea-convolutions-with-some-math"><strong>The Core Idea: Convolutions (with some Math!)</strong></a></li>
+  <li><a href="#making-sense-of-features-relu-and-pooling" id="toc-making-sense-of-features-relu-and-pooling" class="nav-link" data-scroll-target="#making-sense-of-features-relu-and-pooling"><strong>Making Sense of Features: ReLU and Pooling</strong></a></li>
+  </ul></li>
+  <li><a href="#part-2-scorcher---finding-cats-with-cifar-10" id="toc-part-2-scorcher---finding-cats-with-cifar-10" class="nav-link" data-scroll-target="#part-2-scorcher---finding-cats-with-cifar-10"><strong>Part 2: <code>scorcher</code> - Finding Cats with CIFAR-10</strong></a>
+  <ul class="collapse">
+  <li><a href="#installation-one-time-setup" id="toc-installation-one-time-setup" class="nav-link" data-scroll-target="#installation-one-time-setup"><strong>Installation (One-time Setup)</strong></a></li>
+  <li><a href="#step-1-loading-libraries-and-preparing-the-data" id="toc-step-1-loading-libraries-and-preparing-the-data" class="nav-link" data-scroll-target="#step-1-loading-libraries-and-preparing-the-data"><strong>Step 1: Loading Libraries and Preparing the Data</strong></a></li>
+  <li><a href="#step-2-creating-a-data-loader" id="toc-step-2-creating-a-data-loader" class="nav-link" data-scroll-target="#step-2-creating-a-data-loader"><strong>Step 2: Creating a Data Loader</strong></a></li>
+  <li><a href="#step-3-defining-the-neural-network-architecture" id="toc-step-3-defining-the-neural-network-architecture" class="nav-link" data-scroll-target="#step-3-defining-the-neural-network-architecture"><strong>Step 3: Defining the Neural Network Architecture</strong></a></li>
+  <li><a href="#summary-of-the-cat-detectors-brain" id="toc-summary-of-the-cat-detectors-brain" class="nav-link" data-scroll-target="#summary-of-the-cat-detectors-brain">Summary of the Cat Detector’s Brain</a></li>
+  <li><a href="#step-4-compiling-and-training-the-model" id="toc-step-4-compiling-and-training-the-model" class="nav-link" data-scroll-target="#step-4-compiling-and-training-the-model"><strong>Step 4: Compiling and Training the Model</strong></a></li>
+  <li><a href="#step-5-testing-our-cat-detector" id="toc-step-5-testing-our-cat-detector" class="nav-link" data-scroll-target="#step-5-testing-our-cat-detector"><strong>Step 5: Testing Our Cat Detector!</strong></a></li>
+  </ul></li>
+  <li><a href="#part-3-customizing-your-cat-detector" id="toc-part-3-customizing-your-cat-detector" class="nav-link" data-scroll-target="#part-3-customizing-your-cat-detector"><strong>Part 3: Customizing Your Cat Detector</strong></a>
+  <ul class="collapse">
+  <li><a href="#option-1-the-speed-demon-fewer-filters" id="toc-option-1-the-speed-demon-fewer-filters" class="nav-link" data-scroll-target="#option-1-the-speed-demon-fewer-filters"><strong>Option 1: The Speed Demon (Fewer Filters)</strong></a></li>
+  <li><a href="#option-2-the-perfectionist-larger-filters" id="toc-option-2-the-perfectionist-larger-filters" class="nav-link" data-scroll-target="#option-2-the-perfectionist-larger-filters"><strong>Option 2: The Perfectionist (Larger Filters)</strong></a></li>
+  </ul></li>
+  <li><a href="#part-4-exercises-and-solutions" id="toc-part-4-exercises-and-solutions" class="nav-link" data-scroll-target="#part-4-exercises-and-solutions"><strong>Part 4: Exercises and Solutions</strong></a>
+  <ul class="collapse">
+  <li><a href="#exercise-1-the-impatient-trainer" id="toc-exercise-1-the-impatient-trainer" class="nav-link" data-scroll-target="#exercise-1-the-impatient-trainer"><strong>Exercise 1: The Impatient Trainer</strong></a></li>
+  <li><a href="#exercise-2-build-a-deeper-network" id="toc-exercise-2-build-a-deeper-network" class="nav-link" data-scroll-target="#exercise-2-build-a-deeper-network"><strong>Exercise 2: Build a Deeper Network</strong></a></li>
+  <li><a href="#exercise-3-test-your-cat-detector" id="toc-exercise-3-test-your-cat-detector" class="nav-link" data-scroll-target="#exercise-3-test-your-cat-detector"><strong>Exercise 3: Test Your Cat Detector</strong></a></li>
+  </ul></li>
+  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion"><strong>Conclusion</strong></a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Finding Cats on the Internet with CNNs and <code>scorcher</code> in R</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Awan Afiaz </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>Breathe in, breathe out. We’re going to embark on a journey to understand a cool R package called <code>scorcher</code>. But before we dive into the code, we’ll start with the very basics of how a computer can “see” and “understand” images, which is the magic behind Convolutional Neural Networks (CNNs).</p>
+<p>And yes, we’ll be teaching computers to find cats on the internet. Because what else is the internet for? 🐱</p>
+<section id="part-1-the-building-blocks---understanding-how-computers-see" class="level2">
+<h2 class="anchored" data-anchor-id="part-1-the-building-blocks---understanding-how-computers-see"><strong>Part 1: The Building Blocks - Understanding How Computers “See”</strong></h2>
+<p>Imagine you’re teaching a child to recognize a cat. You wouldn’t just show them one picture and expect them to get it right every time. You’d show them many different cats: big ones, small ones, fluffy ones, grumpy ones, and ones that somehow fit in impossibly small boxes. In a way, this is how we train a computer.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://i.etsystatic.com/54504012/r/il/646bcd/6318011128/il_1588xN.6318011128_etn5.jpg" class="img-fluid figure-img" style="width:50.0%"></p>
+<figcaption>Different types of cats on the internet. Source: Etsy</figcaption>
+</figure>
+</div>
+<section id="whats-in-a-picture-pixels" class="level3">
+<h3 class="anchored" data-anchor-id="whats-in-a-picture-pixels"><strong>What’s in a Picture? Pixels!</strong></h3>
+<p>A computer sees an image as a grid of numbers called <strong>pixels</strong>. For a color image, each pixel has <strong>three</strong> numbers representing its Red, Green, and Blue (RGB) values, each ranging from 0 to 255. So, a 32x32 pixel color image is actually a 3D grid of numbers with dimensions <strong>32 x 32 x 3</strong>.</p>
+<p>Our goal? Teach the computer to look at this big grid of numbers and say, <strong>That’s definitely a cat plotting world domination!“</strong></p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://img.freepik.com/free-vector/funny-serious-cat-animal-meme_23-2148974916.jpg" class="img-fluid figure-img" style="width:50.0%"></p>
+<figcaption>Source: Freepik</figcaption>
+</figure>
+</div>
+</section>
+<section id="the-core-idea-convolutions-with-some-math" class="level3">
+<h3 class="anchored" data-anchor-id="the-core-idea-convolutions-with-some-math"><strong>The Core Idea: Convolutions (with some Math!)</strong></h3>
+<p>A <strong>Convolutional Neural Network (CNN)</strong> is essentially a very sophisticated cat detector (among other things). It finds patterns in images by focusing on key features, like pointy ears, whiskers, or that distinctive “I knocked your coffee off the table” expression.</p>
+<p>A <strong>convolution</strong> applies a <strong>filter</strong> (or <strong>kernel</strong>) to an image to create a <strong>feature map</strong>. Think of it like a cat-feature detector sliding across the image going “Whiskers? Nope. Pointy ears? Maybe. Attitude? Definitely!”</p>
+<p>Let’s break down the calculation. Imagine we have a small 5x5 grayscale image patch and a 3x3 filter designed to detect edges:</p>
+<p><strong>Image Patch (Input Pixels):</strong></p>
+<p><span class="math display">\[\begin{pmatrix}
+10 &amp; 20 &amp; 30 &amp; 80 &amp; 90 \\
+15 &amp; \textbf{25} &amp; \textbf{35} &amp; \textbf{45} &amp; 95 \\
+20 &amp; \textbf{30} &amp; \textbf{50} &amp; \textbf{55} &amp; 100 \\
+25 &amp; \textbf{40} &amp; \textbf{60} &amp; \textbf{70} &amp; 105 \\
+30 &amp; 50 &amp; 70 &amp; 80 &amp; 110
+\end{pmatrix}\]</span></p>
+<p><strong>Filter / Kernel (Our Edge Detector):</strong></p>
+<p><span class="math display">\[\begin{pmatrix}
+1 &amp; 0 &amp; -1 \\
+0 &amp; 1 &amp; 0 \\
+-1 &amp; 0 &amp; 1
+\end{pmatrix}\]</span></p>
+<p><strong>The Calculation:</strong></p>
+<ol type="1">
+<li><p><strong>Placement:</strong> We place the filter over the middle 3x3 section of the image patch.</p></li>
+<li><p><strong>Element-wise Multiplication:</strong> We multiply each pixel value by the filter value in the same position. <span class="math display">\[\begin{pmatrix}
+25 \times 1 &amp; 35 \times 0 &amp; 45 \times -1 \\
+30 \times 0 &amp; 50 \times 1 &amp; 55 \times 0 \\
+40 \times -1 &amp; 60 \times 0 &amp; 70 \times 1
+\end{pmatrix}
+=
+\begin{pmatrix}
+25 &amp; 0 &amp; -45 \\
+0 &amp; 50 &amp; 0 \\
+-40 &amp; 0 &amp; 70
+\end{pmatrix}\]</span></p></li>
+<li><p><strong>Summation:</strong> We add all the results together. <span class="math display">\[25 + 0 - 45 + 0 + 50 + 0 - 40 + 0 + 70 = 60\]</span></p></li>
+<li><p><strong>Create Feature Map:</strong> This sum, <code>60</code>, becomes the <strong>first pixel</strong> in our new feature map. We then slide the filter one position to the right and repeat. It’s like a very mathematical game of “Where’s Whiskers?”</p></li>
+</ol>
+</section>
+<section id="making-sense-of-features-relu-and-pooling" class="level3">
+<h3 class="anchored" data-anchor-id="making-sense-of-features-relu-and-pooling"><strong>Making Sense of Features: ReLU and Pooling</strong></h3>
+<p><strong>ReLU (Rectified Linear Unit):</strong> This activation function is basically the network’s way of staying positive. It replaces all negative numbers with zero. The rule is simple: if <span class="math inline">\(x\)</span> is the input, the output is <span class="math inline">\(\max(0, x)\)</span>.</p>
+<ul>
+<li><code>60</code> → <code>max(0, 60)</code> → <code>60</code> ✅</li>
+<li><code>-15</code> → <code>max(0, -15)</code> → <code>0</code> (No negative vibes allowed!)</li>
+</ul>
+<p><strong>Max Pooling:</strong> This step makes our feature maps smaller and more manageable. We slide a small window (e.g., 2x2) over the feature map and keep only the <strong>largest</strong> number from each window. It’s like saying, “If there’s even a hint of a cat ear in this area, we’ll remember it!”</p>
+<p><strong>Example - 2x2 Window on a Feature Map:</strong> <span class="math display">\[\begin{pmatrix}
+\textbf{60} &amp; \textbf{12} \\
+\textbf{35} &amp; \textbf{55}
+\end{pmatrix}\]</span></p>
+<p>The output for this section is <strong>60</strong> - the maximum value. This effectively says, “A strong cat-like feature was detected somewhere in this area!”</p>
+<hr>
+</section>
+</section>
+<section id="part-2-scorcher---finding-cats-with-cifar-10" class="level2">
+<h2 class="anchored" data-anchor-id="part-2-scorcher---finding-cats-with-cifar-10"><strong>Part 2: <code>scorcher</code> - Finding Cats with CIFAR-10</strong></h2>
+<p>Now let’s use <code>scorcher</code> to build our cat detector. We’ll use the <strong>CIFAR-10 dataset</strong>, which contains 60,000 tiny (32x32) color images of 10 different classes including cats! The other classes are airplanes, cars, birds, deer, dogs, frogs, horses, ships, and trucks. But let’s be honest, we’re mostly here for the cats.</p>
+<section id="installation-one-time-setup" class="level3">
+<h3 class="anchored" data-anchor-id="installation-one-time-setup"><strong>Installation (One-time Setup)</strong></h3>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Install the required packages</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"pak"</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>pak<span class="sc">::</span><span class="fu">pak</span>(<span class="st">"jtleek/scorcher"</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="fu">c</span>(<span class="st">"torch"</span>, <span class="st">"torchvision"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="step-1-loading-libraries-and-preparing-the-data" class="level3">
+<h3 class="anchored" data-anchor-id="step-1-loading-libraries-and-preparing-the-data"><strong>Step 1: Loading Libraries and Preparing the Data</strong></h3>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load the necessary libraries</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(scorcher)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(torch)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(torchvision)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Set a random seed for reproducibility (because even cats appreciate consistency)</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load the CIFAR-10 dataset</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>train_data <span class="ot">&lt;-</span> <span class="fu">cifar10_dataset</span>(</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">root =</span> <span class="fu">tempdir</span>(),</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">download =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">transform =</span> transform_to_tensor</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co"># The dataset is a list-like object, we need to access items individually</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Let's get the first item to check dimensions</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>first_item <span class="ot">&lt;-</span> train_data[<span class="dv">1</span>]</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Number of training images:"</span>, <span class="fu">length</span>(train_data), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Number of training images: 50000 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Image dimensions:"</span>, <span class="fu">dim</span>(first_item[[<span class="dv">1</span>]]), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Image dimensions: 3 32 32 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># The class names (SPOILER </span><span class="al">ALERT</span><span class="co">: cats are class 4)</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>class_names <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"airplane"</span>, <span class="st">"automobile"</span>, <span class="st">"bird"</span>, <span class="st">"cat"</span>, <span class="st">"deer"</span>, </span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>                 <span class="st">"dog"</span>, <span class="st">"frog"</span>, <span class="st">"horse"</span>, <span class="st">"ship"</span>, <span class="st">"truck"</span>)</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Count unique classes by sampling some items</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>sample_labels <span class="ot">&lt;-</span> <span class="fu">sapply</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">100</span>, <span class="cf">function</span>(i) <span class="fu">as.integer</span>(train_data[i][[<span class="dv">2</span>]]))</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Number of classes:"</span>, <span class="fu">length</span>(<span class="fu">unique</span>(sample_labels)), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Number of classes: 10 </code></pre>
+</div>
+</div>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert data to tensors</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Since torchvision returns data already as tensors, we need to collect them</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="co"># This might take a moment as we're loading all 50,000 images</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Preparing training data... this might take a moment...</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Preparing training data... this might take a moment...</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Initialize lists to store data</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>x_list <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>y_list <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Load all training data (you might want to use a subset for testing)</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>n_samples <span class="ot">&lt;-</span> <span class="fu">length</span>(train_data)  <span class="co"># or use a smaller number like 5000 for testing</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_samples) {</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>  item <span class="ot">&lt;-</span> train_data[i]</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>  x_list[[i]] <span class="ot">&lt;-</span> item[[<span class="dv">1</span>]]</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>  y_list[[i]] <span class="ot">&lt;-</span> item[[<span class="dv">2</span>]]</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Show progress every 10000 images</span></span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (i <span class="sc">%%</span> <span class="dv">10000</span> <span class="sc">==</span> <span class="dv">0</span>) {</span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>    <span class="fu">cat</span>(<span class="st">"Loaded"</span>, i, <span class="st">"images...</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Loaded 10000 images...
+Loaded 20000 images...
+Loaded 30000 images...
+Loaded 40000 images...
+Loaded 50000 images...</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Stack all tensors</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>x_train <span class="ot">&lt;-</span> <span class="fu">torch_stack</span>(x_list)</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="co"># For labels, we need to ensure they're 1D by using torch_cat instead of torch_stack</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>y_train <span class="ot">&lt;-</span> <span class="fu">torch_cat</span>(y_list)</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Check the shapes</span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Training data shape:"</span>, <span class="fu">dim</span>(x_train), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Training data shape: 50000 3 32 32 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Training labels shape:"</span>, <span class="fu">dim</span>(y_train), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Training labels shape: 50000 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Label tensor dimension:"</span>, <span class="fu">length</span>(<span class="fu">dim</span>(y_train)), <span class="st">"D</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Label tensor dimension: 1 D</code></pre>
+</div>
+</div>
+</section>
+<section id="step-2-creating-a-data-loader" class="level3">
+<h3 class="anchored" data-anchor-id="step-2-creating-a-data-loader"><strong>Step 2: Creating a Data Loader</strong></h3>
+<p>The data loader is like a waiter that serves our neural network bite-sized portions of data instead of the whole buffet at once.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create the DataLoader to feed data in batches</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>dl <span class="ot">&lt;-</span> <span class="fu">scorch_create_dataloader</span>(</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  x_train, </span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>  y_train, </span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">batch_size =</span> <span class="dv">500</span>  <span class="co"># 500 images at a time - a purrfect serving size</span></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"DataLoader created! Ready to serve"</span>, <span class="fu">ceiling</span>(<span class="fu">length</span>(train_data)<span class="sc">/</span><span class="dv">500</span>), </span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">"batches of cat pics (and other things).</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>DataLoader created! Ready to serve 100 batches of cat pics (and other things).</code></pre>
+</div>
+</div>
+</section>
+<section id="step-3-defining-the-neural-network-architecture" class="level3">
+<h3 class="anchored" data-anchor-id="step-3-defining-the-neural-network-architecture"><strong>Step 3: Defining the Neural Network Architecture</strong></h3>
+<p>Time to build our CNN! Think of this as assembling a sophisticated cat-detection machine, layer by layer.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Define the Neural Network</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>scorch_model <span class="ot">&lt;-</span> dl <span class="sc">|&gt;</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">initiate_scorch</span>() <span class="sc">|&gt;</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>  <span class="co"># First convolutional layer: 3 input channels (RGB) → 32 feature detectors</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scorch_layer</span>(<span class="st">"conv2d"</span>, </span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>               <span class="at">in_channels =</span> <span class="dv">3</span>,    <span class="co"># RGB channels</span></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>               <span class="at">out_channels =</span> <span class="dv">32</span>,  <span class="co"># 32 different cat-feature detectors</span></span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>               <span class="at">kernel_size =</span> <span class="dv">3</span>) <span class="sc">|&gt;</span> <span class="co"># 3x3 filter size</span></span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scorch_layer</span>(<span class="st">"relu"</span>) <span class="sc">|&gt;</span>          <span class="co"># Stay positive!</span></span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Second convolutional layer: 32 → 64 feature detectors</span></span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scorch_layer</span>(<span class="st">"conv2d"</span>, </span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>               <span class="at">in_channels =</span> <span class="dv">32</span>,   <span class="co"># From previous layer</span></span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>               <span class="at">out_channels =</span> <span class="dv">64</span>,  <span class="co"># Even more cat detectors!</span></span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a>               <span class="at">kernel_size =</span> <span class="dv">3</span>) <span class="sc">|&gt;</span></span>
+<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scorch_layer</span>(<span class="st">"relu"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb21-18"><a href="#cb21-18" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Max pooling to reduce size</span></span>
+<span id="cb21-19"><a href="#cb21-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scorch_layer</span>(<span class="st">"max_pool2d"</span>, <span class="at">kernel_size =</span> <span class="dv">2</span>) <span class="sc">|&gt;</span>  <span class="co"># "Zoom out" by factor of 2</span></span>
+<span id="cb21-20"><a href="#cb21-20" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb21-21"><a href="#cb21-21" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Flatten the feature maps to a vector</span></span>
+<span id="cb21-22"><a href="#cb21-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scorch_layer</span>(<span class="st">"flatten"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb21-23"><a href="#cb21-23" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb21-24"><a href="#cb21-24" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Add a fully connected layer to classify into 10 classes</span></span>
+<span id="cb21-25"><a href="#cb21-25" aria-hidden="true" tabindex="-1"></a>  <span class="co"># After conv1: 32x32 → 30x30, conv2: 30x30 → 28x28, pool: 28x28 → 14x14</span></span>
+<span id="cb21-26"><a href="#cb21-26" aria-hidden="true" tabindex="-1"></a>  <span class="co"># So we have 64 channels × 14 × 14 = 12,544 features</span></span>
+<span id="cb21-27"><a href="#cb21-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scorch_layer</span>(<span class="st">"linear"</span>, <span class="at">in_features =</span> <span class="dv">64</span> <span class="sc">*</span> <span class="dv">14</span> <span class="sc">*</span> <span class="dv">14</span>, <span class="at">out_features =</span> <span class="dv">128</span>) <span class="sc">|&gt;</span></span>
+<span id="cb21-28"><a href="#cb21-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scorch_layer</span>(<span class="st">"relu"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb21-29"><a href="#cb21-29" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb21-30"><a href="#cb21-30" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Final classification layer</span></span>
+<span id="cb21-31"><a href="#cb21-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scorch_layer</span>(<span class="st">"linear"</span>, <span class="at">in_features =</span> <span class="dv">128</span>, <span class="at">out_features =</span> <span class="dv">10</span>)  <span class="co"># 10 classes in CIFAR-10</span></span>
+<span id="cb21-32"><a href="#cb21-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-33"><a href="#cb21-33" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Model architecture defined! Our cat detector has been assembled.</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Model architecture defined! Our cat detector has been assembled.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Note: After 2 conv layers and pooling, a 32x32 image becomes 14x14 with 64 channels.</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Note: After 2 conv layers and pooling, a 32x32 image becomes 14x14 with 64 channels.</code></pre>
+</div>
+</div>
+</section>
+<section id="summary-of-the-cat-detectors-brain" class="level3">
+<h3 class="anchored" data-anchor-id="summary-of-the-cat-detectors-brain">Summary of the Cat Detector’s Brain</h3>
+<p>Think of the neural network you built as a machine with two main parts: a super-powered set of <strong>Eyes to spot patterns</strong> and a <strong>Brain to make a final decision</strong>.</p>
+<section id="part-1-the-eyes---spotting-cat-like-things" class="level4">
+<h4 class="anchored" data-anchor-id="part-1-the-eyes---spotting-cat-like-things">Part 1: The “Eyes” - Spotting Cat-Like Things</h4>
+<p>This is where the model learns to see. It doesn’t see a whole cat at first, but rather learns to find the little pieces that make up a cat.</p>
+<ul>
+<li><p><strong>First Glance (First <code>conv2d</code> layer):</strong> The model slides dozens of tiny “magnifying glasses” over the image. Each one is designed to find just one simple thing, like a straight edge (a whisker?), a sharp curve (an ear tip?), or a patch of a certain color. It creates 32 mini-maps showing where it found these basic clues.</p></li>
+<li><p><strong>Putting Clues Together (Second <code>conv2d</code> layer):</strong> Now, the model uses a set of 64 smarter magnifying glasses. These look at the simple mini-maps from the first step and search for combinations. For example, it might learn that “a sharp curve” next to “a fuzzy patch” often means “ear.” It builds a more complex understanding of the image’s textures and shapes.</p></li>
+<li><p><strong>Squinting to Get the Gist (The <code>max_pool2d</code> layer):</strong> After finding all these details, the model “squints.” It looks at small regions of the image and just remembers the most important or obvious clue it found there. This step is crucial because it helps the model recognize a cat whether it’s on the left or right side of the picture, and it simplifies the problem by summarizing the findings.</p></li>
+</ul>
+<p>At the end of this “Eyes” phase, the model hasn’t seen a “cat” yet, but it has a very good idea of all the cat-like shapes, edges, and textures present in the image.</p>
+</section>
+<section id="part-2-the-brain---making-the-final-call" class="level4">
+<h4 class="anchored" data-anchor-id="part-2-the-brain---making-the-final-call">Part 2: The “Brain” - Making the Final Call</h4>
+<p>This is where the model takes all the visual evidence and makes a decision.</p>
+<ul>
+<li><p><strong>Lining Up the Evidence (The <code>flatten</code> layer):</strong> The model takes all its different 2D maps of clues and lays them out in one single, super-long line. This gets all the information ready for the final analysis.</p></li>
+<li><p><strong>Weighing the Evidence (First <code>linear</code> layer):</strong> This layer acts like a detective looking at the long line of evidence. It learns to weigh which clues are most important. It might learn that “pointy ears” and “whiskers” are very strong indicators of a cat, while “wheels” or “wings” are strong indicators of not a cat. It combines all 12,544 clues into 128 main points.</p></li>
+<li><p><strong>The Final Vote (Second <code>linear</code> layer):</strong> This last layer takes the 128 main points from the detective and casts a final vote. It gives a score to each of the 10 possible categories (“airplane,” “automobile,” “bird,” “cat,” etc.)</p></li>
+</ul>
+<p>The category that gets the highest score is the model’s final answer.</p>
+</section>
+</section>
+<section id="step-4-compiling-and-training-the-model" class="level3">
+<h3 class="anchored" data-anchor-id="step-4-compiling-and-training-the-model"><strong>Step 4: Compiling and Training the Model</strong></h3>
+<p>Now comes the fun part - teaching our model the ancient art of cat recognition!</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Compile the model (prepare it for training)</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>compiled_scorch_model <span class="ot">&lt;-</span> <span class="fu">compile_scorch</span>(scorch_model)</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Model compiled and ready for training! Let the learning begin...</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Model compiled and ready for training! Let the learning begin...</code></pre>
+</div>
+</div>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Train the model!</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>fitted_scorch_model <span class="ot">&lt;-</span> compiled_scorch_model <span class="sc">|&gt;</span> </span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fit_scorch</span>(</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">loss =</span> nn_cross_entropy_loss,  <span class="co"># How wrong are we?</span></span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">num_epochs =</span> <span class="dv">10</span>,                <span class="co"># 5 full passes through the data</span></span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">verbose =</span> <span class="cn">TRUE</span>                 <span class="co"># Show training progress</span></span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Save the entire fitted model object to the file</span></span>
+<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a><span class="fu">torch_save</span>(fitted_scorch_model, <span class="st">"cat_detector_model.pt"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">🎉 Training complete! Your model is now a certified cat expert.</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+🎉 Training complete! Your model is now a certified cat expert.</code></pre>
+</div>
+</div>
+<p>The <strong>loss</strong> value should decrease with each epoch, indicating that your model is getting better at distinguishing cats from non-cats. It’s like watching a kitten learn to hunt - clumsy at first, but gradually becoming a precision predator!</p>
+</section>
+<section id="step-5-testing-our-cat-detector" class="level3">
+<h3 class="anchored" data-anchor-id="step-5-testing-our-cat-detector"><strong>Step 5: Testing Our Cat Detector!</strong></h3>
+<p>Let’s see if our model can actually find a cat:</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load test data</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>test_data <span class="ot">&lt;-</span> <span class="fu">cifar10_dataset</span>(</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">root =</span> <span class="fu">tempdir</span>(),</span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">train =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">download =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">transform =</span> transform_to_tensor</span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Function to find a cat in the test set</span></span>
+<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a><span class="co"># find_cat_index &lt;- function(test_data, start_idx = 1) {</span></span>
+<span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a><span class="co">#   for (i in start_idx:length(test_data)) {</span></span>
+<span id="cb30-12"><a href="#cb30-12" aria-hidden="true" tabindex="-1"></a><span class="co">#     if (as.integer(test_data[i][[2]]) == 3) {</span></span>
+<span id="cb30-13"><a href="#cb30-13" aria-hidden="true" tabindex="-1"></a><span class="co">#       return(i)</span></span>
+<span id="cb30-14"><a href="#cb30-14" aria-hidden="true" tabindex="-1"></a><span class="co">#     }</span></span>
+<span id="cb30-15"><a href="#cb30-15" aria-hidden="true" tabindex="-1"></a><span class="co">#   }</span></span>
+<span id="cb30-16"><a href="#cb30-16" aria-hidden="true" tabindex="-1"></a><span class="co">#   return(NULL)</span></span>
+<span id="cb30-17"><a href="#cb30-17" aria-hidden="true" tabindex="-1"></a><span class="co"># }</span></span>
+<span id="cb30-18"><a href="#cb30-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-19"><a href="#cb30-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Find a cat image</span></span>
+<span id="cb30-20"><a href="#cb30-20" aria-hidden="true" tabindex="-1"></a>cat_idx <span class="ot">&lt;-</span> <span class="dv">559</span></span>
+<span id="cb30-21"><a href="#cb30-21" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Found a cat at index"</span>, cat_idx, <span class="st">"! Let's test our model...</span><span class="sc">\n\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Found a cat at index 559 ! Let's test our model...</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Get the cat image</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>test_item <span class="ot">&lt;-</span> test_data[cat_idx]</span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>test_image <span class="ot">&lt;-</span> test_item[[<span class="dv">1</span>]]</span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>test_label <span class="ot">&lt;-</span> <span class="fu">as.integer</span>(test_item[[<span class="dv">2</span>]])</span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Prepare for prediction</span></span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>test_input <span class="ot">&lt;-</span> test_image <span class="sc">|&gt;</span> <span class="fu">torch_unsqueeze</span>(<span class="dv">1</span>)</span>
+<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Make prediction</span></span>
+<span id="cb32-10"><a href="#cb32-10" aria-hidden="true" tabindex="-1"></a><span class="fu">with_no_grad</span>({</span>
+<span id="cb32-11"><a href="#cb32-11" aria-hidden="true" tabindex="-1"></a>  prediction <span class="ot">&lt;-</span> <span class="fu">fitted_scorch_model</span>(test_input)</span>
+<span id="cb32-12"><a href="#cb32-12" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb32-13"><a href="#cb32-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-14"><a href="#cb32-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Get predicted class</span></span>
+<span id="cb32-15"><a href="#cb32-15" aria-hidden="true" tabindex="-1"></a>predicted_probs <span class="ot">&lt;-</span> <span class="fu">nnf_softmax</span>(prediction, <span class="at">dim =</span> <span class="dv">2</span>)</span>
+<span id="cb32-16"><a href="#cb32-16" aria-hidden="true" tabindex="-1"></a>predicted_class <span class="ot">&lt;-</span> <span class="fu">as.integer</span>(<span class="fu">torch_argmax</span>(prediction, <span class="at">dim =</span> <span class="dv">2</span>))</span>
+<span id="cb32-17"><a href="#cb32-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-18"><a href="#cb32-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Visualize the result</span></span>
+<span id="cb32-19"><a href="#cb32-19" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>), <span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">4</span>, <span class="dv">2</span>))</span>
+<span id="cb32-20"><a href="#cb32-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-21"><a href="#cb32-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Helper function to convert an image tensor for plotting</span></span>
+<span id="cb32-22"><a href="#cb32-22" aria-hidden="true" tabindex="-1"></a>tensor_to_img <span class="ot">&lt;-</span> <span class="cf">function</span>(tensor) {</span>
+<span id="cb32-23"><a href="#cb32-23" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Convert tensor to R array and move dimensions for plotting</span></span>
+<span id="cb32-24"><a href="#cb32-24" aria-hidden="true" tabindex="-1"></a>  <span class="co"># from (Channels, Height, Width) to (Height, Width, Channels)</span></span>
+<span id="cb32-25"><a href="#cb32-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">aperm</span>(<span class="fu">as.array</span>(tensor<span class="sc">$</span><span class="fu">cpu</span>()), <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">1</span>))</span>
+<span id="cb32-26"><a href="#cb32-26" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb32-27"><a href="#cb32-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-28"><a href="#cb32-28" aria-hidden="true" tabindex="-1"></a><span class="co"># Show the image</span></span>
+<span id="cb32-29"><a href="#cb32-29" aria-hidden="true" tabindex="-1"></a>img_array <span class="ot">&lt;-</span> <span class="fu">tensor_to_img</span>(test_image)</span>
+<span id="cb32-30"><a href="#cb32-30" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="dv">1</span>, <span class="at">type =</span> <span class="st">"n"</span>, <span class="at">xlim =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>), <span class="at">ylim =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>), </span>
+<span id="cb32-31"><a href="#cb32-31" aria-hidden="true" tabindex="-1"></a>     <span class="at">axes =</span> <span class="cn">FALSE</span>, <span class="at">xlab =</span> <span class="st">""</span>, <span class="at">ylab =</span> <span class="st">""</span>, </span>
+<span id="cb32-32"><a href="#cb32-32" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">"Test Image"</span>)</span>
+<span id="cb32-33"><a href="#cb32-33" aria-hidden="true" tabindex="-1"></a><span class="fu">rasterImage</span>(img_array, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">1</span>)</span>
+<span id="cb32-34"><a href="#cb32-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-35"><a href="#cb32-35" aria-hidden="true" tabindex="-1"></a><span class="co"># Show prediction results</span></span>
+<span id="cb32-36"><a href="#cb32-36" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>, <span class="fu">as.numeric</span>(predicted_probs[<span class="dv">1</span>, ]), </span>
+<span id="cb32-37"><a href="#cb32-37" aria-hidden="true" tabindex="-1"></a>     <span class="at">type =</span> <span class="st">"h"</span>, <span class="at">lwd =</span> <span class="dv">10</span>,</span>
+<span id="cb32-38"><a href="#cb32-38" aria-hidden="true" tabindex="-1"></a>     <span class="at">col =</span> <span class="fu">ifelse</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span> <span class="sc">==</span> (predicted_class), <span class="st">"green"</span>, <span class="st">"gray"</span>),</span>
+<span id="cb32-39"><a href="#cb32-39" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">""</span>, <span class="at">ylab =</span> <span class="st">"Probability"</span>,</span>
+<span id="cb32-40"><a href="#cb32-40" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">"Model Predictions"</span>,</span>
+<span id="cb32-41"><a href="#cb32-41" aria-hidden="true" tabindex="-1"></a>     <span class="at">xaxt =</span> <span class="st">"n"</span>, <span class="at">ylim =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>))</span>
+<span id="cb32-42"><a href="#cb32-42" aria-hidden="true" tabindex="-1"></a><span class="fu">axis</span>(<span class="dv">1</span>, <span class="at">at =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>, <span class="at">labels =</span> class_names, <span class="at">las =</span> <span class="dv">2</span>, <span class="at">cex.axis =</span> <span class="fl">0.8</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="scorcher_tutorial_CNN_files/figure-html/test-cat-detection-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="576"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Print results</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">🎯 PREDICTION RESULTS:</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+🎯 PREDICTION RESULTS:</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"True label:"</span>, class_names[test_label], <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>True label: cat </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Predicted:"</span>, class_names[predicted_class], <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Predicted: cat </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (predicted_class <span class="sc">==</span> test_label <span class="sc">&amp;&amp;</span> test_label <span class="sc">==</span> <span class="dv">4</span>) {</span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">"Is that really a cat? 🎉 MEOW-VELOUS! Our model correctly identified the cat! 😺</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>} <span class="cf">else</span> <span class="cf">if</span> (predicted_class <span class="sc">==</span> test_label) {</span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">"✅ Not a cat but still a Correct Prediction!</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>} <span class="cf">else</span> {</span>
+<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">"❌ Oops, the model got confused. More training needed!</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Is that really a cat? 🎉 MEOW-VELOUS! Our model correctly identified the cat! 😺</code></pre>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="part-3-customizing-your-cat-detector" class="level2">
+<h2 class="anchored" data-anchor-id="part-3-customizing-your-cat-detector"><strong>Part 3: Customizing Your Cat Detector</strong></h2>
+<p>The beauty of <code>scorcher</code> is how easy it is to experiment. Here are some modifications you can try:</p>
+<section id="option-1-the-speed-demon-fewer-filters" class="level3">
+<h3 class="anchored" data-anchor-id="option-1-the-speed-demon-fewer-filters"><strong>Option 1: The Speed Demon (Fewer Filters)</strong></h3>
+<p>For when you need results meow, not later:</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="co"># A simpler, faster model with fewer filters</span></span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>speed_demon_model <span class="ot">&lt;-</span> dl <span class="sc">|&gt;</span></span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">initiate_scorch</span>() <span class="sc">|&gt;</span></span>
+<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scorch_layer</span>(<span class="st">"conv2d"</span>, <span class="at">in_channels =</span> <span class="dv">3</span>, <span class="at">out_channels =</span> <span class="dv">8</span>, <span class="at">kernel_size =</span> <span class="dv">3</span>) <span class="sc">|&gt;</span></span>
+<span id="cb41-5"><a href="#cb41-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scorch_layer</span>(<span class="st">"relu"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb41-6"><a href="#cb41-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scorch_layer</span>(<span class="st">"conv2d"</span>, <span class="at">in_channels =</span> <span class="dv">8</span>, <span class="at">out_channels =</span> <span class="dv">16</span>, <span class="at">kernel_size =</span> <span class="dv">3</span>) <span class="sc">|&gt;</span></span>
+<span id="cb41-7"><a href="#cb41-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scorch_layer</span>(<span class="st">"relu"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb41-8"><a href="#cb41-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scorch_layer</span>(<span class="st">"max_pool2d"</span>, <span class="at">kernel_size =</span> <span class="dv">2</span>) <span class="sc">|&gt;</span></span>
+<span id="cb41-9"><a href="#cb41-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scorch_layer</span>(<span class="st">"flatten"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb41-10"><a href="#cb41-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scorch_layer</span>(<span class="st">"linear"</span>, <span class="at">in_features =</span> <span class="dv">16</span> <span class="sc">*</span> <span class="dv">14</span> <span class="sc">*</span> <span class="dv">14</span>, <span class="at">out_features =</span> <span class="dv">64</span>) <span class="sc">|&gt;</span></span>
+<span id="cb41-11"><a href="#cb41-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scorch_layer</span>(<span class="st">"relu"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb41-12"><a href="#cb41-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scorch_layer</span>(<span class="st">"linear"</span>, <span class="at">in_features =</span> <span class="dv">64</span>, <span class="at">out_features =</span> <span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<ul>
+<li><strong>This model trains faster but might miss some subtle cat features</strong></li>
+</ul>
+</section>
+<section id="option-2-the-perfectionist-larger-filters" class="level3">
+<h3 class="anchored" data-anchor-id="option-2-the-perfectionist-larger-filters"><strong>Option 2: The Perfectionist (Larger Filters)</strong></h3>
+<p>For capturing those complex feline features:</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="co"># A model with larger filters to see bigger patterns</span></span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>perfectionist_model <span class="ot">&lt;-</span> dl <span class="sc">|&gt;</span></span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">initiate_scorch</span>() <span class="sc">|&gt;</span></span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scorch_layer</span>(<span class="st">"conv2d"</span>, <span class="at">in_channels =</span> <span class="dv">3</span>, <span class="at">out_channels =</span> <span class="dv">32</span>, <span class="at">kernel_size =</span> <span class="dv">5</span>) <span class="sc">|&gt;</span></span>
+<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scorch_layer</span>(<span class="st">"relu"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb42-6"><a href="#cb42-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scorch_layer</span>(<span class="st">"conv2d"</span>, <span class="at">in_channels =</span> <span class="dv">32</span>, <span class="at">out_channels =</span> <span class="dv">64</span>, <span class="at">kernel_size =</span> <span class="dv">5</span>) <span class="sc">|&gt;</span></span>
+<span id="cb42-7"><a href="#cb42-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scorch_layer</span>(<span class="st">"relu"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb42-8"><a href="#cb42-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scorch_layer</span>(<span class="st">"max_pool2d"</span>, <span class="at">kernel_size =</span> <span class="dv">2</span>) <span class="sc">|&gt;</span></span>
+<span id="cb42-9"><a href="#cb42-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scorch_layer</span>(<span class="st">"flatten"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb42-10"><a href="#cb42-10" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Note: 5x5 kernels reduce dimensions more</span></span>
+<span id="cb42-11"><a href="#cb42-11" aria-hidden="true" tabindex="-1"></a>  <span class="co"># After conv1: 32x32 → 28x28, conv2: 28x28 → 24x24, pool: 24x24 → 12x12</span></span>
+<span id="cb42-12"><a href="#cb42-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scorch_layer</span>(<span class="st">"linear"</span>, <span class="at">in_features =</span> <span class="dv">64</span> <span class="sc">*</span> <span class="dv">12</span> <span class="sc">*</span> <span class="dv">12</span>, <span class="at">out_features =</span> <span class="dv">128</span>) <span class="sc">|&gt;</span></span>
+<span id="cb42-13"><a href="#cb42-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scorch_layer</span>(<span class="st">"relu"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb42-14"><a href="#cb42-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scorch_layer</span>(<span class="st">"linear"</span>, <span class="at">in_features =</span> <span class="dv">128</span>, <span class="at">out_features =</span> <span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<ul>
+<li><strong>Larger filters = seeing the bigger picture (literally)</strong></li>
+</ul>
+<hr>
+</section>
+</section>
+<section id="part-4-exercises-and-solutions" class="level2">
+<h2 class="anchored" data-anchor-id="part-4-exercises-and-solutions"><strong>Part 4: Exercises and Solutions</strong></h2>
+<p>Time to test your newfound knowledge! Remember: curiosity might have killed the cat, but satisfaction brought it back.</p>
+<section id="exercise-1-the-impatient-trainer" class="level3">
+<h3 class="anchored" data-anchor-id="exercise-1-the-impatient-trainer"><strong>Exercise 1: The Impatient Trainer</strong></h3>
+<p>You’re in a hurry (maybe your cat is demanding attention) and want results faster. Modify the training code to: - Run for <strong>10 epochs</strong> - Use a larger <strong>batch size of 1024</strong></p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+🐾 Click for Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 1: Create a new dataloader with larger batch size</span></span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>dl_impatient <span class="ot">&lt;-</span> <span class="fu">scorch_create_dataloader</span>(</span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>  x_train, </span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a>  y_train, </span>
+<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">batch_size =</span> <span class="dv">1024</span>  <span class="co"># Bigger batches = faster training</span></span>
+<span id="cb43-6"><a href="#cb43-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb43-7"><a href="#cb43-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-8"><a href="#cb43-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 2: Build the model with the new dataloader</span></span>
+<span id="cb43-9"><a href="#cb43-9" aria-hidden="true" tabindex="-1"></a>model_impatient <span class="ot">&lt;-</span> dl_impatient <span class="sc">|&gt;</span></span>
+<span id="cb43-10"><a href="#cb43-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">initiate_scorch</span>() <span class="sc">|&gt;</span></span>
+<span id="cb43-11"><a href="#cb43-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scorch_layer</span>(<span class="st">"conv2d"</span>, <span class="at">in_channels =</span> <span class="dv">3</span>, <span class="at">out_channels =</span> <span class="dv">32</span>, <span class="at">kernel_size =</span> <span class="dv">3</span>) <span class="sc">|&gt;</span></span>
+<span id="cb43-12"><a href="#cb43-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scorch_layer</span>(<span class="st">"relu"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb43-13"><a href="#cb43-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scorch_layer</span>(<span class="st">"conv2d"</span>, <span class="at">in_channels =</span> <span class="dv">32</span>, <span class="at">out_channels =</span> <span class="dv">64</span>, <span class="at">kernel_size =</span> <span class="dv">3</span>) <span class="sc">|&gt;</span></span>
+<span id="cb43-14"><a href="#cb43-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scorch_layer</span>(<span class="st">"relu"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb43-15"><a href="#cb43-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scorch_layer</span>(<span class="st">"max_pool2d"</span>, <span class="at">kernel_size =</span> <span class="dv">2</span>) <span class="sc">|&gt;</span></span>
+<span id="cb43-16"><a href="#cb43-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scorch_layer</span>(<span class="st">"flatten"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb43-17"><a href="#cb43-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scorch_layer</span>(<span class="st">"linear"</span>, <span class="at">in_features =</span> <span class="dv">64</span> <span class="sc">*</span> <span class="dv">14</span> <span class="sc">*</span> <span class="dv">14</span>, <span class="at">out_features =</span> <span class="dv">128</span>) <span class="sc">|&gt;</span></span>
+<span id="cb43-18"><a href="#cb43-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scorch_layer</span>(<span class="st">"relu"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb43-19"><a href="#cb43-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scorch_layer</span>(<span class="st">"linear"</span>, <span class="at">in_features =</span> <span class="dv">128</span>, <span class="at">out_features =</span> <span class="dv">10</span>)</span>
+<span id="cb43-20"><a href="#cb43-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-21"><a href="#cb43-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 3: Compile and train for 15 epochs</span></span>
+<span id="cb43-22"><a href="#cb43-22" aria-hidden="true" tabindex="-1"></a>compiled_impatient <span class="ot">&lt;-</span> <span class="fu">compile_scorch</span>(model_impatient)</span>
+<span id="cb43-23"><a href="#cb43-23" aria-hidden="true" tabindex="-1"></a>fitted_impatient <span class="ot">&lt;-</span> compiled_impatient <span class="sc">|&gt;</span></span>
+<span id="cb43-24"><a href="#cb43-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fit_scorch</span>(</span>
+<span id="cb43-25"><a href="#cb43-25" aria-hidden="true" tabindex="-1"></a>    <span class="at">loss =</span> nn_cross_entropy_loss, </span>
+<span id="cb43-26"><a href="#cb43-26" aria-hidden="true" tabindex="-1"></a>    <span class="at">num_epochs =</span> <span class="dv">10</span>,  <span class="co"># More epochs for better accuracy</span></span>
+<span id="cb43-27"><a href="#cb43-27" aria-hidden="true" tabindex="-1"></a>    <span class="at">verbose =</span> <span class="cn">TRUE</span></span>
+<span id="cb43-28"><a href="#cb43-28" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb43-29"><a href="#cb43-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-30"><a href="#cb43-30" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Speed training complete! Your cat probably finished their nap.</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="exercise-2-build-a-deeper-network" class="level3">
+<h3 class="anchored" data-anchor-id="exercise-2-build-a-deeper-network"><strong>Exercise 2: Build a Deeper Network</strong></h3>
+<p>Make your network “deeper” by adding another set of convolutional layers. The new layer should: - Take 64 channels as input - Produce 128 feature maps as output - Include ReLU activation and max pooling</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+🐾 Click for Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Define a DEEPER Neural Network (for finding even sneakier cats)</span></span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>deeper_model <span class="ot">&lt;-</span> dl <span class="sc">|&gt;</span></span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">initiate_scorch</span>() <span class="sc">|&gt;</span></span>
+<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Layer 1: Basic cat features</span></span>
+<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scorch_layer</span>(<span class="st">"conv2d"</span>, <span class="at">in_channels =</span> <span class="dv">3</span>, <span class="at">out_channels =</span> <span class="dv">32</span>, <span class="at">kernel_size =</span> <span class="dv">3</span>) <span class="sc">|&gt;</span></span>
+<span id="cb44-6"><a href="#cb44-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scorch_layer</span>(<span class="st">"relu"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb44-7"><a href="#cb44-7" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb44-8"><a href="#cb44-8" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Layer 2: More complex patterns</span></span>
+<span id="cb44-9"><a href="#cb44-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scorch_layer</span>(<span class="st">"conv2d"</span>, <span class="at">in_channels =</span> <span class="dv">32</span>, <span class="at">out_channels =</span> <span class="dv">64</span>, <span class="at">kernel_size =</span> <span class="dv">3</span>) <span class="sc">|&gt;</span></span>
+<span id="cb44-10"><a href="#cb44-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scorch_layer</span>(<span class="st">"relu"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb44-11"><a href="#cb44-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scorch_layer</span>(<span class="st">"max_pool2d"</span>, <span class="at">kernel_size =</span> <span class="dv">2</span>) <span class="sc">|&gt;</span></span>
+<span id="cb44-12"><a href="#cb44-12" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb44-13"><a href="#cb44-13" aria-hidden="true" tabindex="-1"></a>  <span class="co"># --- NEW LAYERS ---</span></span>
+<span id="cb44-14"><a href="#cb44-14" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Layer 3: Expert-level cat detection</span></span>
+<span id="cb44-15"><a href="#cb44-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scorch_layer</span>(<span class="st">"conv2d"</span>, <span class="at">in_channels =</span> <span class="dv">64</span>, <span class="at">out_channels =</span> <span class="dv">128</span>, <span class="at">kernel_size =</span> <span class="dv">3</span>) <span class="sc">|&gt;</span></span>
+<span id="cb44-16"><a href="#cb44-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scorch_layer</span>(<span class="st">"relu"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb44-17"><a href="#cb44-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scorch_layer</span>(<span class="st">"max_pool2d"</span>, <span class="at">kernel_size =</span> <span class="dv">2</span>) <span class="sc">|&gt;</span></span>
+<span id="cb44-18"><a href="#cb44-18" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb44-19"><a href="#cb44-19" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Flatten and classify</span></span>
+<span id="cb44-20"><a href="#cb44-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scorch_layer</span>(<span class="st">"flatten"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb44-21"><a href="#cb44-21" aria-hidden="true" tabindex="-1"></a>  <span class="co"># After conv1: 32→30, conv2: 30→28, pool: 28→14, conv3: 14→12, pool: 12→6</span></span>
+<span id="cb44-22"><a href="#cb44-22" aria-hidden="true" tabindex="-1"></a>  <span class="co"># So we have 128 channels × 6 × 6 = 4,608 features</span></span>
+<span id="cb44-23"><a href="#cb44-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scorch_layer</span>(<span class="st">"linear"</span>, <span class="at">in_features =</span> <span class="dv">128</span> <span class="sc">*</span> <span class="dv">6</span> <span class="sc">*</span> <span class="dv">6</span>, <span class="at">out_features =</span> <span class="dv">256</span>) <span class="sc">|&gt;</span></span>
+<span id="cb44-24"><a href="#cb44-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scorch_layer</span>(<span class="st">"relu"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb44-25"><a href="#cb44-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scorch_layer</span>(<span class="st">"linear"</span>, <span class="at">in_features =</span> <span class="dv">256</span>, <span class="at">out_features =</span> <span class="dv">10</span>)</span>
+<span id="cb44-26"><a href="#cb44-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-27"><a href="#cb44-27" aria-hidden="true" tabindex="-1"></a><span class="co"># Compile and train as before</span></span>
+<span id="cb44-28"><a href="#cb44-28" aria-hidden="true" tabindex="-1"></a>compiled_deeper <span class="ot">&lt;-</span> <span class="fu">compile_scorch</span>(deeper_model)</span>
+<span id="cb44-29"><a href="#cb44-29" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Deeper model created! Now with 3 layers of cat-detection power.</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="exercise-3-test-your-cat-detector" class="level3">
+<h3 class="anchored" data-anchor-id="exercise-3-test-your-cat-detector"><strong>Exercise 3: Test Your Cat Detector</strong></h3>
+<p>Your friend sends you a mystery image from the CIFAR-10 test set. Use your trained model to identify it!</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+🐾 Click for Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-3" class="callout-3-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 1: Load the test data</span></span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>test_data <span class="ot">&lt;-</span> <span class="fu">cifar10_dataset</span>(</span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">root =</span> <span class="fu">tempdir</span>(),</span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">train =</span> <span class="cn">FALSE</span>,  <span class="co"># Important: use the test set!</span></span>
+<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">download =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb45-6"><a href="#cb45-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">transform =</span> transform_to_tensor</span>
+<span id="cb45-7"><a href="#cb45-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb45-8"><a href="#cb45-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-9"><a href="#cb45-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 2: Pick a test image (let's try the 5th one)</span></span>
+<span id="cb45-10"><a href="#cb45-10" aria-hidden="true" tabindex="-1"></a>test_image_index <span class="ot">&lt;-</span> <span class="dv">5</span></span>
+<span id="cb45-11"><a href="#cb45-11" aria-hidden="true" tabindex="-1"></a>test_item <span class="ot">&lt;-</span> test_data[test_image_index]</span>
+<span id="cb45-12"><a href="#cb45-12" aria-hidden="true" tabindex="-1"></a>single_image <span class="ot">&lt;-</span> test_item[[<span class="dv">1</span>]] <span class="sc">|&gt;</span></span>
+<span id="cb45-13"><a href="#cb45-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">torch_unsqueeze</span>(<span class="dv">1</span>)  <span class="co"># Add batch dimension</span></span>
+<span id="cb45-14"><a href="#cb45-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-15"><a href="#cb45-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 3: Get the true label</span></span>
+<span id="cb45-16"><a href="#cb45-16" aria-hidden="true" tabindex="-1"></a>true_label <span class="ot">&lt;-</span> <span class="fu">as.integer</span>(test_item[[<span class="dv">2</span>]])</span>
+<span id="cb45-17"><a href="#cb45-17" aria-hidden="true" tabindex="-1"></a>true_class <span class="ot">&lt;-</span> class_names[true_label <span class="sc">+</span> <span class="dv">1</span>]  <span class="co"># R uses 1-based indexing</span></span>
+<span id="cb45-18"><a href="#cb45-18" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"The mystery image is actually a:"</span>, true_class, <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb45-19"><a href="#cb45-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-20"><a href="#cb45-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 4: Make a prediction</span></span>
+<span id="cb45-21"><a href="#cb45-21" aria-hidden="true" tabindex="-1"></a>prediction <span class="ot">&lt;-</span> <span class="fu">fitted_scorch_model</span>(single_image)</span>
+<span id="cb45-22"><a href="#cb45-22" aria-hidden="true" tabindex="-1"></a>predicted_class_index <span class="ot">&lt;-</span> <span class="fu">as.integer</span>(<span class="fu">torch_argmax</span>(prediction, <span class="at">dim =</span> <span class="dv">2</span>))</span>
+<span id="cb45-23"><a href="#cb45-23" aria-hidden="true" tabindex="-1"></a>predicted_class <span class="ot">&lt;-</span> class_names[predicted_class_index <span class="sc">+</span> <span class="dv">1</span>]</span>
+<span id="cb45-24"><a href="#cb45-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-25"><a href="#cb45-25" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 5: Check the results</span></span>
+<span id="cb45-26"><a href="#cb45-26" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Our model thinks it's a:"</span>, predicted_class, <span class="st">"</span><span class="sc">\n\n</span><span class="st">"</span>)</span>
+<span id="cb45-27"><a href="#cb45-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-28"><a href="#cb45-28" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (predicted_class <span class="sc">==</span> true_class) {</span>
+<span id="cb45-29"><a href="#cb45-29" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (predicted_class <span class="sc">==</span> <span class="st">"cat"</span>) {</span>
+<span id="cb45-30"><a href="#cb45-30" aria-hidden="true" tabindex="-1"></a>    <span class="fu">cat</span>(<span class="st">"✨ Purrfect! The model correctly identified the cat! 😺</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb45-31"><a href="#cb45-31" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
+<span id="cb45-32"><a href="#cb45-32" aria-hidden="true" tabindex="-1"></a>    <span class="fu">cat</span>(<span class="st">"✅ Correct! Though it wasn't a cat... 🤔</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb45-33"><a href="#cb45-33" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb45-34"><a href="#cb45-34" aria-hidden="true" tabindex="-1"></a>} <span class="cf">else</span> {</span>
+<span id="cb45-35"><a href="#cb45-35" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (true_class <span class="sc">==</span> <span class="st">"cat"</span>) {</span>
+<span id="cb45-36"><a href="#cb45-36" aria-hidden="true" tabindex="-1"></a>    <span class="fu">cat</span>(<span class="st">"😿 Oh no! The model missed a cat! Time for more training.</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb45-37"><a href="#cb45-37" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
+<span id="cb45-38"><a href="#cb45-38" aria-hidden="true" tabindex="-1"></a>    <span class="fu">cat</span>(<span class="st">"❌ Oops! Wrong answer, but at least it wasn't a cat we missed.</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb45-39"><a href="#cb45-39" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb45-40"><a href="#cb45-40" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="conclusion" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion"><strong>Conclusion</strong></h2>
+<p>Congratulations! You’ve successfully built a CNN that can find cats on the internet using R and <code>scorcher</code>. You’ve learned:</p>
+<ul>
+<li>How computers “see” images as grids of numbers</li>
+<li>How convolutions work to detect features</li>
+<li>How to build and train a CNN using <code>scorcher</code></li>
+<li>How to make your model faster or more accurate</li>
+</ul>
+<p>Remember: With great computational power comes great responsibility. Use your cat-detection skills wisely!</p>
+<p>And if your model isn’t purrfect yet, don’t worry - even cats need nine lives to get things right. Keep experimenting with different architectures, and soon you’ll have a model that’s the cat’s meow! 🐱</p>
+<hr>
+<p><em>Happy coding, and may your loss always be decreasing and your cats always be detected!</em></p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp("https:\/\/awanafiaz\.github\.io\/PEPCEI_site\/");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
