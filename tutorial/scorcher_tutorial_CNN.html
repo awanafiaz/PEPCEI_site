@@ -8,7 +8,7 @@
 
 <meta name="author" content="Awan Afiaz">
 
-<title>Finding Cats on the Internet with CNNs and scorcher in R – PEPCEI</title>
+<title>scorcher: Find Cats on the Internet with CNNs in R – PEPCEI</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -243,12 +243,12 @@ window.Quarto = {
   <li><a href="#step-4-compiling-and-training-the-model" id="toc-step-4-compiling-and-training-the-model" class="nav-link" data-scroll-target="#step-4-compiling-and-training-the-model"><strong>Step 4: Compiling and Training the Model</strong></a></li>
   <li><a href="#step-5-testing-our-cat-detector" id="toc-step-5-testing-our-cat-detector" class="nav-link" data-scroll-target="#step-5-testing-our-cat-detector"><strong>Step 5: Testing Our Cat Detector!</strong></a></li>
   </ul></li>
-  <li><a href="#part-3-customizing-your-cat-detector" id="toc-part-3-customizing-your-cat-detector" class="nav-link" data-scroll-target="#part-3-customizing-your-cat-detector"><strong>Part 3: Customizing Your Cat Detector</strong></a>
+  <li><a href="#part-3-customizing-your-cat-detector-with-scorcher" id="toc-part-3-customizing-your-cat-detector-with-scorcher" class="nav-link" data-scroll-target="#part-3-customizing-your-cat-detector-with-scorcher"><strong>Part 3: Customizing Your Cat Detector with <code>scorcher</code></strong></a>
   <ul class="collapse">
   <li><a href="#option-1-the-speed-demon-fewer-filters" id="toc-option-1-the-speed-demon-fewer-filters" class="nav-link" data-scroll-target="#option-1-the-speed-demon-fewer-filters"><strong>Option 1: The Speed Demon (Fewer Filters)</strong></a></li>
   <li><a href="#option-2-the-perfectionist-larger-filters" id="toc-option-2-the-perfectionist-larger-filters" class="nav-link" data-scroll-target="#option-2-the-perfectionist-larger-filters"><strong>Option 2: The Perfectionist (Larger Filters)</strong></a></li>
   </ul></li>
-  <li><a href="#part-4-exercises-and-solutions" id="toc-part-4-exercises-and-solutions" class="nav-link" data-scroll-target="#part-4-exercises-and-solutions"><strong>Part 4: Exercises and Solutions</strong></a>
+  <li><a href="#part-4-exercises-with-scorcher-with-solutions" id="toc-part-4-exercises-with-scorcher-with-solutions" class="nav-link" data-scroll-target="#part-4-exercises-with-scorcher-with-solutions"><strong>Part 4: Exercises with <code>scorcher</code> with Solutions</strong></a>
   <ul class="collapse">
   <li><a href="#exercise-1-the-impatient-trainer" id="toc-exercise-1-the-impatient-trainer" class="nav-link" data-scroll-target="#exercise-1-the-impatient-trainer"><strong>Exercise 1: The Impatient Trainer</strong></a></li>
   <li><a href="#exercise-2-build-a-deeper-network" id="toc-exercise-2-build-a-deeper-network" class="nav-link" data-scroll-target="#exercise-2-build-a-deeper-network"><strong>Exercise 2: Build a Deeper Network</strong></a></li>
@@ -263,7 +263,7 @@ window.Quarto = {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Finding Cats on the Internet with CNNs and <code>scorcher</code> in R</h1>
+<h1 class="title"><code>scorcher</code>: Find Cats on the Internet with CNNs in R</h1>
 </div>
 
 
@@ -350,7 +350,7 @@ window.Quarto = {
 <p><strong>ReLU (Rectified Linear Unit):</strong> This activation function is basically the network’s way of staying positive. It replaces all negative numbers with zero. The rule is simple: if <span class="math inline">\(x\)</span> is the input, the output is <span class="math inline">\(\max(0, x)\)</span>.</p>
 <ul>
 <li><code>60</code> → <code>max(0, 60)</code> → <code>60</code> ✅</li>
-<li><code>-15</code> → <code>max(0, -15)</code> → <code>0</code> (No negative vibes allowed!)</li>
+<li><code>-15</code> → <code>max(0, -15)</code> → <code>0</code> <strong>(No negative vibes allowed!)</strong></li>
 </ul>
 <p><strong>Max Pooling:</strong> This step makes our feature maps smaller and more manageable. We slide a small window (e.g., 2x2) over the feature map and keep only the <strong>largest</strong> number from each window. It’s like saying, “If there’s even a hint of a cat ear in this area, we’ll remember it!”</p>
 <p><strong>Example - 2x2 Window on a Feature Map:</strong> <span class="math display">\[\begin{pmatrix}
@@ -692,8 +692,8 @@ Loaded 50000 images...</code></pre>
 <hr>
 </section>
 </section>
-<section id="part-3-customizing-your-cat-detector" class="level2">
-<h2 class="anchored" data-anchor-id="part-3-customizing-your-cat-detector"><strong>Part 3: Customizing Your Cat Detector</strong></h2>
+<section id="part-3-customizing-your-cat-detector-with-scorcher" class="level2">
+<h2 class="anchored" data-anchor-id="part-3-customizing-your-cat-detector-with-scorcher"><strong>Part 3: Customizing Your Cat Detector with <code>scorcher</code></strong></h2>
 <p>The beauty of <code>scorcher</code> is how easy it is to experiment. Here are some modifications you can try:</p>
 <section id="option-1-the-speed-demon-fewer-filters" class="level3">
 <h3 class="anchored" data-anchor-id="option-1-the-speed-demon-fewer-filters"><strong>Option 1: The Speed Demon (Fewer Filters)</strong></h3>
@@ -741,8 +741,8 @@ Loaded 50000 images...</code></pre>
 <hr>
 </section>
 </section>
-<section id="part-4-exercises-and-solutions" class="level2">
-<h2 class="anchored" data-anchor-id="part-4-exercises-and-solutions"><strong>Part 4: Exercises and Solutions</strong></h2>
+<section id="part-4-exercises-with-scorcher-with-solutions" class="level2">
+<h2 class="anchored" data-anchor-id="part-4-exercises-with-scorcher-with-solutions"><strong>Part 4: Exercises with <code>scorcher</code> with Solutions</strong></h2>
 <p>Time to test your newfound knowledge! Remember: curiosity might have killed the cat, but satisfaction brought it back.</p>
 <section id="exercise-1-the-impatient-trainer" class="level3">
 <h3 class="anchored" data-anchor-id="exercise-1-the-impatient-trainer"><strong>Exercise 1: The Impatient Trainer</strong></h3>
