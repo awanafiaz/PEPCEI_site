@@ -1,0 +1,1179 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.42">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Awan Afiaz">
+<meta name="dcterms.date" content="2025-06-03">
+
+<title>Setup-01: PE Classification with only CXR Embeddings – PEPCEI</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../static/pepcei.png" rel="icon" type="image/png">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-6bd9cfa162949bde0a231f530c97869d.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../styles.css">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="../index.html" class="navbar-brand navbar-brand-logo">
+    <img src="../static/pepcei.png" alt="PEPCEI Logo" class="navbar-logo">
+    </a>
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">PEPCEI Project</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../project-description.html"> 
+<span class="menu-text">Project Description</span></a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-data-descriptions" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Data Descriptions</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-data-descriptions">    
+        <li>
+    <a class="dropdown-item" href="../data/cxr.html">
+ <span class="dropdown-text">CXR Data</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../data/ekg.html">
+ <span class="dropdown-text">EKG Data</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-result-presentation" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Result Presentation</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-result-presentation">    
+        <li>
+    <a class="dropdown-item" href="../results/PEPCI_CXR_only_CNN.html">
+ <span class="dropdown-text">CNN with CXR only</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../results/transformer.qmd">
+ <span class="dropdown-text">Transformer Models</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../results/other.qmd">
+ <span class="dropdown-text">Other Outputs</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="../tutorial/tutorial_CNN_scorcher.html"> 
+<span class="menu-text">Scorcher Tutorial with Cats</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../about.html"> 
+<span class="menu-text">About Us</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a>
+  <ul class="collapse">
+  <li><a href="#a.-the-clinical-problem" id="toc-a.-the-clinical-problem" class="nav-link" data-scroll-target="#a.-the-clinical-problem">A. The Clinical Problem</a></li>
+  <li><a href="#b.-the-proposed-solution-and-overall-vision" id="toc-b.-the-proposed-solution-and-overall-vision" class="nav-link" data-scroll-target="#b.-the-proposed-solution-and-overall-vision">B. The Proposed Solution and Overall Vision</a></li>
+  <li><a href="#c.-initial-technical-approach-embeddings-and-cnns" id="toc-c.-initial-technical-approach-embeddings-and-cnns" class="nav-link" data-scroll-target="#c.-initial-technical-approach-embeddings-and-cnns">C. Initial Technical Approach: Embeddings and CNNs</a></li>
+  <li><a href="#d.-advanced-and-future-directions-raw-data-and-transformers" id="toc-d.-advanced-and-future-directions-raw-data-and-transformers" class="nav-link" data-scroll-target="#d.-advanced-and-future-directions-raw-data-and-transformers">D. Advanced and Future Directions: Raw Data and Transformers</a></li>
+  </ul></li>
+  <li><a href="#setup-and-libraries" id="toc-setup-and-libraries" class="nav-link" data-scroll-target="#setup-and-libraries">1. Setup and Libraries</a></li>
+  <li><a href="#metadata-loading-and-cleaning" id="toc-metadata-loading-and-cleaning" class="nav-link" data-scroll-target="#metadata-loading-and-cleaning">2. Metadata Loading and Cleaning</a></li>
+  <li><a href="#tfrecord-parsing-and-data-loading" id="toc-tfrecord-parsing-and-data-loading" class="nav-link" data-scroll-target="#tfrecord-parsing-and-data-loading">3. TFRecord Parsing and Data Loading</a></li>
+  <li><a href="#data-splitting" id="toc-data-splitting" class="nav-link" data-scroll-target="#data-splitting">4. Data Splitting</a></li>
+  <li><a href="#tensor-conversion-dataloader" id="toc-tensor-conversion-dataloader" class="nav-link" data-scroll-target="#tensor-conversion-dataloader">5. Tensor Conversion &amp; DataLoader</a></li>
+  <li><a href="#model-architecture-definition" id="toc-model-architecture-definition" class="nav-link" data-scroll-target="#model-architecture-definition">6. Model Architecture Definition</a>
+  <ul class="collapse">
+  <li><a href="#summary-of-the-model-architecture" id="toc-summary-of-the-model-architecture" class="nav-link" data-scroll-target="#summary-of-the-model-architecture">Summary of the Model Architecture</a></li>
+  </ul></li>
+  <li><a href="#model-training" id="toc-model-training" class="nav-link" data-scroll-target="#model-training">7. Model Training</a></li>
+  <li><a href="#final-evaluation" id="toc-final-evaluation" class="nav-link" data-scroll-target="#final-evaluation">8. Final Evaluation</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Setup-01: PE Classification with only CXR Embeddings</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Awan Afiaz </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">June 3, 2025</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="introduction" class="level2">
+<h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
+<section id="a.-the-clinical-problem" class="level3">
+<h3 class="anchored" data-anchor-id="a.-the-clinical-problem">A. The Clinical Problem</h3>
+<p>Pulmonary Embolism (PE) is a life-threatening condition where rapid and accurate diagnosis is paramount. The current diagnostic gold standard, the CT pulmonary angiogram (CTPA), while effective, presents significant drawbacks. It imposes a considerable financial burden on the healthcare system and exposes patients to high doses of ionizing radiation, which carries a non-trivial risk of malignancy, a critical concern in a population already battling cancer.</p>
+</section>
+<section id="b.-the-proposed-solution-and-overall-vision" class="level3">
+<h3 class="anchored" data-anchor-id="b.-the-proposed-solution-and-overall-vision">B. The Proposed Solution and Overall Vision</h3>
+<p>This project aims to address these challenges through a systematic investigation of machine learning (ML) models capable of predicting PE from more readily available and safer data sources. By developing a predictive tool that leverages data from routine Chest X-Rays (CXR) and Electrocardiograms (EKG), we aim to create a powerful, low-cost screening and diagnostic aid. The overarching vision is to enhance early PE detection, thereby reducing morbidity and mortality in our patient populations. A successful model would simultaneously lessen the reliance on expensive CT scans, providing a safer and more efficient diagnostic pathway. This entire study is based on the publicly available MIMIC-IV dataset.</p>
+</section>
+<section id="c.-initial-technical-approach-embeddings-and-cnns" class="level3">
+<h3 class="anchored" data-anchor-id="c.-initial-technical-approach-embeddings-and-cnns">C. Initial Technical Approach: Embeddings and CNNs</h3>
+<p>Our technical approach begins with an initial phase focused on pre-computed embeddings to establish a strong performance baseline. For the radiography component, we will utilize the 4,096-dimensional feature vectors from the PhysioNet MIMIC-CXR dataset, which were generated by a state-of-the-art EfficientNet-L2 foundation model. This allows us to leverage deep representations of image abnormalities without the computational overhead of image processing. These rich CXR vectors will be combined with corresponding embeddings derived from EKG waveform data, and the initial models developed to fuse and interpret this data will be based on Convolutional Neural Network (CNN) architectures.</p>
+</section>
+<section id="d.-advanced-and-future-directions-raw-data-and-transformers" class="level3">
+<h3 class="anchored" data-anchor-id="d.-advanced-and-future-directions-raw-data-and-transformers">D. Advanced and Future Directions: Raw Data and Transformers</h3>
+<p>Building upon this foundation, the subsequent phase will engage directly with the raw data modalities. A multi-modal CNN architecture will be developed to process both the 2D pixel data from chest X-rays and the 1D time-series signals from electrocardiograms, allowing the model to learn features end-to-end. Looking forward, the project’s ultimate goal is to advance beyond conventional CNNs and explore the capabilities of transformer models.</p>
+<hr>
+</section>
+</section>
+<section id="setup-and-libraries" class="level2">
+<h2 class="anchored" data-anchor-id="setup-and-libraries">1. Setup and Libraries</h2>
+<p>This document details the initial end-to-end process of building, training, and evaluating a deep learning model to predict Pulmonary Embolism (PE) from pre-computed Chest X-Ray (CXR) embeddings. The workflow begins with loading and parsing a complex <code>.tfrecord</code> data format, proceeds through data splitting and pre-processing, defines a sophisticated neural network architecture, trains the model, and concludes with a final, unbiased evaluation.</p>
+<p>In the first step, we will set up our R environment. This involves loading all the necessary R packages that provide the functions we need for deep learning, data loading, and general data manipulation.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load all necessary packages for deep learning, data loading, and manipulation.</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(torch)         <span class="co"># Core deep learning framework.</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(scorcher)      <span class="co"># High-level wrapper for torch to simplify model building.</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tensorflow)    <span class="co"># Used specifically for its .tfrecord file reading capabilities.</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tfdatasets)    <span class="co"># Provides tools to create data pipelines from .tfrecord files.</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)     <span class="co"># Used for data manipulation, specifically the `mutate` pipe.</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(reticulate)    <span class="co"># The bridge between R and Python, necessary for tensorflow.</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(pROC)          <span class="co"># The standard library for calculating AUROC and plotting ROC curves.</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Set seeds for reproducibility of results across runs.</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">612</span>)              <span class="co"># Sets R's random seed for operations like data splitting.</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="fu">torch_manual_seed</span>(<span class="dv">612</span>)     <span class="co"># Sets torch's random seed for model weight initialization.</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="code-explanation" class="level4">
+<h4 class="anchored" data-anchor-id="code-explanation"><strong>Code Explanation</strong></h4>
+<p>The chunk above prepares our session. We load several key libraries:</p>
+<ul>
+<li><p><strong><code>torch</code> &amp; <code>scorcher</code></strong>: The foundation of our deep learning model.</p></li>
+<li><p><strong><code>tensorflow</code> &amp; <code>tfdatasets</code></strong>: A powerful combination used here specifically to solve the complex task of reading the <code>.tfrecord</code> files from the PhysioNet dataset.</p></li>
+<li><p><strong><code>reticulate</code></strong>: Allows R to communicate with the Python-based TensorFlow library.</p></li>
+<li><p><strong><code>tidyverse</code></strong>: We use it here for clean data manipulation functions and later for <code>ggplot2</code>.</p></li>
+</ul>
+<hr>
+</section>
+</section>
+<section id="metadata-loading-and-cleaning" class="level2">
+<h2 class="anchored" data-anchor-id="metadata-loading-and-cleaning">2. Metadata Loading and Cleaning</h2>
+<p>Here, we will load the <code>CXRembeddingfile.csv</code>. This file acts as our map, linking the path of each embedding file to its corresponding clinical label (PE positive or negative). We will also perform a cleaning step to make the file paths portable.</p>
+<ul>
+<li><p>Load the CSV file into an R data frame.</p></li>
+<li><p>Inspect the file paths, which are specific to the original user’s machine.</p></li>
+<li><p>Remove the user-specific prefix from the file paths to make them relative and portable.</p></li>
+<li><p>Verify that the labels in the file are valid (i.e., only 0s and 1s).</p></li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Define the path to the CSV file that maps embeddings to labels.</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>metadata_file <span class="ot">&lt;-</span> <span class="st">"CXR/CXRembeddingfile.csv"</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Read the metadata and make file paths portable.</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>embedding_metadata <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(metadata_file) <span class="sc">|&gt;</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Remove original specific filepaths</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">filepath =</span> <span class="fu">str_replace</span>(filepath, <span class="st">"^/Users/[^/]+/Desktop/"</span>, <span class="st">""</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Ensure we only have the columns we need.</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(filepath, label)</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="co"># This is a defensive check to ensure our label data is clean.</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">all</span>(embedding_metadata<span class="sc">$</span>label <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>))) {</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stop</span>(<span class="st">"Invalid labels found. Expected only 0 and 1."</span>)</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Successfully loaded and cleaned metadata for"</span>, <span class="fu">nrow</span>(embedding_metadata), <span class="st">"CXR records."</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Successfully loaded and cleaned metadata for 3590 CXR records.</code></pre>
+</div>
+</div>
+<hr>
+</section>
+<section id="tfrecord-parsing-and-data-loading" class="level2">
+<h2 class="anchored" data-anchor-id="tfrecord-parsing-and-data-loading">3. TFRecord Parsing and Data Loading</h2>
+<p>We now need to read the actual embedding vectors, which are stored in a special binary format called <code>.tfrecord</code>.</p>
+<ul>
+<li><p>Define a special “parser” function that teaches R and TensorFlow how to interpret the structure of our specific <code>.tfrecord</code> files.</p></li>
+<li><p>Create a <code>tfdatasets</code> pipeline that applies this parser to every file path from our metadata.</p></li>
+<li><p>Execute the pipeline, iterating through every file and converting the TensorFlow tensors into R-native objects.</p></li>
+<li><p>Combine the list of vectors into a single large matrix.</p></li>
+<li><p>Adjust the labels for R’s indexing system (from 0-1 to 1-2).</p></li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Define a function to parse a single .tfrecord file.</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>parse_embedding_fn <span class="ot">&lt;-</span> <span class="cf">function</span>(proto) {</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Describe the structure of the data inside the .tfrecord file.</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  features <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    <span class="co"># The feature 'embedding' is stored as a variable-length list of floats.</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">embedding =</span> tensorflow<span class="sc">::</span>tf<span class="sc">$</span>io<span class="sc">$</span><span class="fu">VarLenFeature</span>(<span class="at">dtype =</span> tensorflow<span class="sc">::</span>tf<span class="sc">$</span>float32)</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Parse the binary record using the defined structure.</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>  parsed_features <span class="ot">&lt;-</span> tensorflow<span class="sc">::</span>tf<span class="sc">$</span>io<span class="sc">$</span><span class="fu">parse_single_example</span>(proto, features)</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>  <span class="co"># VarLenFeature creates a SparseTensor; convert it to a normal (dense) tensor.</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>  embedding_vector <span class="ot">&lt;-</span> tensorflow<span class="sc">::</span>tf<span class="sc">$</span>sparse<span class="sc">$</span><span class="fu">to_dense</span>(parsed_features<span class="sc">$</span>embedding)</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Ensure the output is a flat 1D vector.</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>  tensorflow<span class="sc">::</span>tf<span class="sc">$</span><span class="fu">reshape</span>(embedding_vector, <span class="at">shape =</span> <span class="fu">list</span>(<span class="sc">-</span><span class="dv">1</span>L))</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a dataset pipeline object from the filepaths.</span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>tf_dataset <span class="ot">&lt;-</span> <span class="fu">tfrecord_dataset</span>(embedding_metadata<span class="sc">$</span>filepath) <span class="sc">|&gt;</span></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Apply our parsing function to each file in the dataset.</span></span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">dataset_map</span>(parse_embedding_fn)</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Execute the pipeline and load all embeddings into R.</span></span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a><span class="co"># reticulate::iterate calls the tensor's .numpy() method to convert it to an R object.</span></span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>embedding_list <span class="ot">&lt;-</span> reticulate<span class="sc">::</span><span class="fu">iterate</span>(tf_dataset, <span class="at">f =</span> <span class="cf">function</span>(x) x<span class="sc">$</span><span class="fu">numpy</span>())</span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a><span class="co"># Combine the list of individual embedding vectors into a single matrix.</span></span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>all_embeddings <span class="ot">&lt;-</span> <span class="fu">do.call</span>(rbind, embedding_list)</span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a><span class="co"># Get the labels vector and add 1 to convert from 0/1 to 1/2.</span></span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a><span class="co"># This is required for R's 1-based indexing in the torch loss function.</span></span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>outcome_labels <span class="ot">&lt;-</span> embedding_metadata<span class="sc">$</span>label <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"--- Data Loading Complete ---</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>--- Data Loading Complete ---</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Loaded"</span>, <span class="fu">nrow</span>(all_embeddings), <span class="st">"embeddings with"</span>, <span class="fu">ncol</span>(all_embeddings), <span class="st">"features each.</span><span class="sc">\n\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Loaded 3590 embeddings with 1376 features each.</code></pre>
+</div>
+</div>
+<section id="code-explanation-1" class="level4">
+<h4 class="anchored" data-anchor-id="code-explanation-1"><strong>Code Explanation</strong></h4>
+<p>This chunk is the result of our extensive debugging and represents the correct way to load this specific dataset.</p>
+<ul>
+<li><p><strong><code>parse_embedding_fn</code></strong>: This function is the instruction manual for reading a single file. We discovered through debugging that the data is stored as a <code>VarLenFeature</code> (variable-length feature). Inside the function, we parse the file, convert the data from its special “sparse” format to a regular “dense” vector, and reshape it to ensure it’s a flat list of numbers.</p></li>
+<li><p><strong><code>tfrecord_dataset()</code></strong>: This creates the initial dataset object, which is essentially a list of file paths.</p></li>
+<li><p><strong><code>dataset_map()</code></strong>: This applies our parser function across the entire dataset.</p></li>
+<li><p><strong><code>reticulate::iterate()</code></strong>: This is the key function that executes the pipeline. It loops through every parsed record and uses the <code>.numpy()</code> method to convert the TensorFlow tensor into an R-friendly format.</p></li>
+<li><p><strong><code>do.call(rbind, ...)</code></strong>: This is an efficient R function for taking a list of vectors and stacking them together row-by-row to create our final <code>all_embeddings</code> matrix.</p></li>
+<li><p><strong><code>+ 1</code></strong>: We add 1 to the labels (<code>0, 1</code>) to turn them into (<code>1, 2</code>). This is critical because <code>torch</code> in R expects class indices to start at 1, not 0.</p></li>
+</ul>
+<hr>
+</section>
+</section>
+<section id="data-splitting" class="level2">
+<h2 class="anchored" data-anchor-id="data-splitting">4. Data Splitting</h2>
+<p>To build a reliable model, we must separate our data into distinct sets.</p>
+<ul>
+<li><p><strong>Training Set (70%)</strong>: The data the model learns from.</p></li>
+<li><p><strong>Testing Set (15%)</strong>: Data used during training to monitor for overfitting.</p></li>
+<li><p><strong>Validation Set (15%)</strong>: The “lockbox” data, used only once at the very end for a final, unbiased performance evaluation.</p></li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"--- Splitting Data ---</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>--- Splitting Data ---</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>num_samples <span class="ot">&lt;-</span> <span class="fu">nrow</span>(all_embeddings)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Shuffle indices to ensure random distribution of data across splits.</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>shuffled_indices <span class="ot">&lt;-</span> <span class="fu">sample</span>(num_samples)</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Define the size of each dataset split.</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>train_size <span class="ot">&lt;-</span> <span class="fu">floor</span>(<span class="fl">0.70</span> <span class="sc">*</span> num_samples)</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>test_size <span class="ot">&lt;-</span> <span class="fu">floor</span>(<span class="fl">0.15</span> <span class="sc">*</span> num_samples)</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Get the indices for each set from the shuffled list.</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>train_indices <span class="ot">&lt;-</span> shuffled_indices[<span class="dv">1</span><span class="sc">:</span>train_size]</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>test_indices <span class="ot">&lt;-</span> shuffled_indices[(train_size <span class="sc">+</span> <span class="dv">1</span>)<span class="sc">:</span>(train_size <span class="sc">+</span> test_size)]</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>val_indices <span class="ot">&lt;-</span> shuffled_indices[(train_size <span class="sc">+</span> test_size <span class="sc">+</span> <span class="dv">1</span>)<span class="sc">:</span>num_samples]</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Subset the embeddings and labels into their respective sets using the indices.</span></span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>x_train <span class="ot">&lt;-</span> all_embeddings[train_indices, ]</span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>y_train <span class="ot">&lt;-</span> outcome_labels[train_indices]</span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>x_test <span class="ot">&lt;-</span> all_embeddings[test_indices, ]</span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>y_test <span class="ot">&lt;-</span> outcome_labels[test_indices]</span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>x_val <span class="ot">&lt;-</span> all_embeddings[val_indices, ]</span>
+<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a>y_val <span class="ot">&lt;-</span> outcome_labels[val_indices]</span>
+<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Training samples:"</span>, <span class="fu">nrow</span>(x_train), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Training samples: 2513 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Testing samples (for epoch monitoring):"</span>, <span class="fu">nrow</span>(x_test), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Testing samples (for epoch monitoring): 538 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Validation samples (final lockbox):"</span>, <span class="fu">nrow</span>(x_val), <span class="st">"</span><span class="sc">\n\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Validation samples (final lockbox): 539 </code></pre>
+</div>
+</div>
+<hr>
+</section>
+<section id="tensor-conversion-dataloader" class="level2">
+<h2 class="anchored" data-anchor-id="tensor-conversion-dataloader">5. Tensor Conversion &amp; DataLoader</h2>
+<p>The <code>torch</code> library has its own highly optimized data format called a “tensor.” We must convert all our data into this format. We also create a <code>DataLoader</code> using the <code>scorch</code> package, which is a tool that feeds data to the model in small, efficient batches during training.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert all R matrices and vectors into torch tensors.</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>x_train <span class="ot">&lt;-</span> <span class="fu">torch_tensor</span>(x_train)</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>y_train <span class="ot">&lt;-</span> <span class="fu">torch_tensor</span>(y_train, <span class="at">dtype =</span> <span class="fu">torch_long</span>())</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>x_test <span class="ot">&lt;-</span> <span class="fu">torch_tensor</span>(x_test)</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>y_test <span class="ot">&lt;-</span> <span class="fu">torch_tensor</span>(y_test, <span class="at">dtype =</span> <span class="fu">torch_long</span>())</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>x_val <span class="ot">&lt;-</span> <span class="fu">torch_tensor</span>(x_val)</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>y_val <span class="ot">&lt;-</span> <span class="fu">torch_tensor</span>(y_val, <span class="at">dtype =</span> <span class="fu">torch_long</span>())</span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a dataloader to feed the training data to the model in batches.</span></span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>dl <span class="ot">&lt;-</span> <span class="fu">scorch_create_dataloader</span>(x_train, y_train, <span class="at">batch_size =</span> <span class="dv">32</span>)</span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Dynamically get the embedding dimension from the data.</span></span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>embedding_dim <span class="ot">&lt;-</span> <span class="fu">ncol</span>(x_train)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="code-explanation-2" class="level4">
+<h4 class="anchored" data-anchor-id="code-explanation-2"><strong>Code Explanation</strong></h4>
+<ul>
+<li><p><strong><code>torch_tensor()</code></strong>: The primary function for converting R objects to torch tensors. The <code>dtype = torch_long()</code> is important for the labels, as classification loss functions expect integer-type labels.</p></li>
+<li><p><strong><code>scorch_create_dataloader()</code></strong>: This <code>scorcher</code> function simplifies the creation of a dataloader. A <code>batch_size = 32</code> means the model will look at 32 samples at a time before updating its weights.</p></li>
+</ul>
+<hr>
+</section>
+</section>
+<section id="model-architecture-definition" class="level2">
+<h2 class="anchored" data-anchor-id="model-architecture-definition">6. Model Architecture Definition</h2>
+<p>Now we define the “brain” of our operation—the neural network itself. This is a moderately complex architecture designed to be powerful enough for this task. It is organized into logical blocks and uses Batch Normalization and Dropout.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">--- Building Balanced Model Architecture ---</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+--- Building Balanced Model Architecture ---</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Define a moderately complex neural network architecture using a scorcher pipeline.</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>scorch_model <span class="ot">&lt;-</span> dl <span class="sc">|&gt;</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">initiate_scorch</span>() <span class="sc">|&gt;</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>  <span class="co"># === INPUT PROCESSING ===</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Expands features and applies immediate regularization.</span></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scorch_layer</span>(<span class="st">"linear"</span>, <span class="at">in_features =</span> embedding_dim, <span class="at">out_features =</span> <span class="dv">512</span>) <span class="sc">|&gt;</span></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scorch_layer</span>(<span class="st">"batch_norm1d"</span>, <span class="at">num_features =</span> <span class="dv">512</span>) <span class="sc">|&gt;</span></span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scorch_layer</span>(<span class="st">"relu"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scorch_layer</span>(<span class="st">"dropout"</span>, <span class="at">p =</span> <span class="fl">0.2</span>) <span class="sc">|&gt;</span></span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>  <span class="co"># === FEATURE EXTRACTION BLOCK 1 ===</span></span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Uses a sigmoid 'gate' to help the model select important features.</span></span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scorch_layer</span>(<span class="st">"linear"</span>, <span class="at">in_features =</span> <span class="dv">512</span>, <span class="at">out_features =</span> <span class="dv">384</span>) <span class="sc">|&gt;</span></span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scorch_layer</span>(<span class="st">"batch_norm1d"</span>, <span class="at">num_features =</span> <span class="dv">384</span>) <span class="sc">|&gt;</span></span>
+<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scorch_layer</span>(<span class="st">"relu"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scorch_layer</span>(<span class="st">"linear"</span>, <span class="at">in_features =</span> <span class="dv">384</span>, <span class="at">out_features =</span> <span class="dv">384</span>) <span class="sc">|&gt;</span></span>
+<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scorch_layer</span>(<span class="st">"sigmoid"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scorch_layer</span>(<span class="st">"dropout"</span>, <span class="at">p =</span> <span class="fl">0.3</span>) <span class="sc">|&gt;</span></span>
+<span id="cb19-19"><a href="#cb19-19" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb19-20"><a href="#cb19-20" aria-hidden="true" tabindex="-1"></a>  <span class="co"># === FEATURE EXTRACTION BLOCK 2 ===</span></span>
+<span id="cb19-21"><a href="#cb19-21" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Uses tanh activation to bound features between -1 and 1.</span></span>
+<span id="cb19-22"><a href="#cb19-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scorch_layer</span>(<span class="st">"linear"</span>, <span class="at">in_features =</span> <span class="dv">384</span>, <span class="at">out_features =</span> <span class="dv">256</span>) <span class="sc">|&gt;</span></span>
+<span id="cb19-23"><a href="#cb19-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scorch_layer</span>(<span class="st">"batch_norm1d"</span>, <span class="at">num_features =</span> <span class="dv">256</span>) <span class="sc">|&gt;</span></span>
+<span id="cb19-24"><a href="#cb19-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scorch_layer</span>(<span class="st">"relu"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb19-25"><a href="#cb19-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scorch_layer</span>(<span class="st">"linear"</span>, <span class="at">in_features =</span> <span class="dv">256</span>, <span class="at">out_features =</span> <span class="dv">256</span>) <span class="sc">|&gt;</span></span>
+<span id="cb19-26"><a href="#cb19-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scorch_layer</span>(<span class="st">"batch_norm1d"</span>, <span class="at">num_features =</span> <span class="dv">256</span>) <span class="sc">|&gt;</span></span>
+<span id="cb19-27"><a href="#cb19-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scorch_layer</span>(<span class="st">"tanh"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb19-28"><a href="#cb19-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scorch_layer</span>(<span class="st">"dropout"</span>, <span class="at">p =</span> <span class="fl">0.4</span>) <span class="sc">|&gt;</span></span>
+<span id="cb19-29"><a href="#cb19-29" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb19-30"><a href="#cb19-30" aria-hidden="true" tabindex="-1"></a>  <span class="co"># === CLASSIFICATION HEAD ===</span></span>
+<span id="cb19-31"><a href="#cb19-31" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Reduces features down to the final class outputs.</span></span>
+<span id="cb19-32"><a href="#cb19-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scorch_layer</span>(<span class="st">"linear"</span>, <span class="at">in_features =</span> <span class="dv">256</span>, <span class="at">out_features =</span> <span class="dv">128</span>) <span class="sc">|&gt;</span></span>
+<span id="cb19-33"><a href="#cb19-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scorch_layer</span>(<span class="st">"batch_norm1d"</span>, <span class="at">num_features =</span> <span class="dv">128</span>) <span class="sc">|&gt;</span></span>
+<span id="cb19-34"><a href="#cb19-34" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scorch_layer</span>(<span class="st">"relu"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb19-35"><a href="#cb19-35" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scorch_layer</span>(<span class="st">"linear"</span>, <span class="at">in_features =</span> <span class="dv">128</span>, <span class="at">out_features =</span> <span class="dv">64</span>) <span class="sc">|&gt;</span></span>
+<span id="cb19-36"><a href="#cb19-36" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scorch_layer</span>(<span class="st">"batch_norm1d"</span>, <span class="at">num_features =</span> <span class="dv">64</span>) <span class="sc">|&gt;</span></span>
+<span id="cb19-37"><a href="#cb19-37" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scorch_layer</span>(<span class="st">"relu"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb19-38"><a href="#cb19-38" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scorch_layer</span>(<span class="st">"dropout"</span>, <span class="at">p =</span> <span class="fl">0.3</span>) <span class="sc">|&gt;</span></span>
+<span id="cb19-39"><a href="#cb19-39" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb19-40"><a href="#cb19-40" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Final Output Layer: Produces raw scores (logits) for our 2 classes.</span></span>
+<span id="cb19-41"><a href="#cb19-41" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scorch_layer</span>(<span class="st">"linear"</span>, <span class="at">in_features =</span> <span class="dv">64</span>, <span class="at">out_features =</span> <span class="dv">2</span>)</span>
+<span id="cb19-42"><a href="#cb19-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-43"><a href="#cb19-43" aria-hidden="true" tabindex="-1"></a><span class="co"># Compile the defined architecture into a trainable torch model.</span></span>
+<span id="cb19-44"><a href="#cb19-44" aria-hidden="true" tabindex="-1"></a>compiled_scorch_model <span class="ot">&lt;-</span> <span class="fu">compile_scorch</span>(scorch_model)</span>
+<span id="cb19-45"><a href="#cb19-45" aria-hidden="true" tabindex="-1"></a>compiled_scorch_model</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$nn_model
+An `nn_module` containing 1,258,690 parameters.
+
+── Modules ─────────────────────────────────────────────────────────────────────
+• modules: &lt;nn_module_list&gt; #1,258,690 parameters
+
+$dl
+This is a dataloader object with features:
+ * Batch size: 32
+ * Number of batches: 79
+ * Dimension of input tensors: 1376
+ * Dimension of output tensors: 1</code></pre>
+</div>
+</div>
+<section id="code-explanation-3" class="level4">
+<h4 class="anchored" data-anchor-id="code-explanation-3"><strong>Code Explanation</strong></h4>
+<p>This <code>scorcher</code> pipeline defines a deep neural network layer-by-layer.</p>
+<ul>
+<li><p><strong><code>scorch_layer("linear", ...)</code></strong>: A standard fully-connected layer. <code>in_features</code> must match the output of the previous layer, and <code>out_features</code> defines the size of the next layer.</p></li>
+<li><p><strong><code>scorch_layer("relu")</code></strong>: The main activation function, allowing the model to learn non-linear patterns.</p></li>
+<li><p><strong><code>scorch_layer("batch_norm1d", ...)</code></strong>: Normalizes the outputs of the previous layer, which helps stabilize and speed up training.</p></li>
+<li><p><strong><code>scorch_layer("dropout", p = ...)</code></strong>: A regularization technique that randomly sets a proportion (<code>p</code>) of neuron activations to zero during training to prevent overfitting.</p></li>
+<li><p><strong><code>compile_scorch()</code></strong>: This finalizes the model definition and prepares it for training.</p></li>
+</ul>
+<p>Of course. Here is a summary of the model architecture from the final script, incorporating the explanations for why each layer and its specific values were chosen.</p>
+<hr>
+</section>
+<section id="summary-of-the-model-architecture" class="level3">
+<h3 class="anchored" data-anchor-id="summary-of-the-model-architecture">Summary of the Model Architecture</h3>
+<p>The model is a deep, feed-forward neural network designed to classify Pulmonary Embolism (PE) risk from high-dimensional (4096) CXR embedding vectors. The architecture follows a sophisticated “funnel” design, progressively reducing the dimensionality of the features while using a combination of modern techniques to stabilize training and prevent overfitting. It is organized into distinct logical blocks:</p>
+<section id="input-processing-block-4096-512-features" class="level4">
+<h4 class="anchored" data-anchor-id="input-processing-block-4096-512-features">1. Input Processing Block (4096 → 512 features)</h4>
+<p>This initial block serves to compress the large, sparse input embedding into a more manageable and dense feature representation.</p>
+<ul>
+<li><strong><code>linear(4096, 512)</code></strong>: The first layer performs a crucial transformation, reducing the feature dimension from 4096 to 512. This forces the model to create a dense summary of the initial information.</li>
+<li><strong><code>batch_norm1d</code></strong>: Immediately follows the linear layer to stabilize its output, which is critical when dealing with such a large input dimension.</li>
+<li><strong><code>relu</code></strong>: The standard activation function introduces non-linearity, allowing the model to learn complex patterns.</li>
+<li><strong><code>dropout(p=0.2)</code></strong>: A light dropout is applied. This provides initial regularization without discarding too much potentially valuable information from the input embedding.</li>
+</ul>
+</section>
+<section id="feature-extraction-block-1-512-384-features" class="level4">
+<h4 class="anchored" data-anchor-id="feature-extraction-block-1-512-384-features">2. Feature Extraction Block 1 (512 → 384 features)</h4>
+<p>This block continues to refine features and introduces a “gating” mechanism to help the model learn which features are most important.</p>
+<ul>
+<li><strong><code>linear</code> &amp; <code>relu</code></strong>: The network continues to process and transform the 512 features into a 384-feature space.</li>
+<li><strong><code>sigmoid</code> Gate</strong>: A unique feature of this block is a <code>linear</code> layer followed by a <code>sigmoid</code> activation. This <code>sigmoid</code> function squashes its output to a range between 0 and 1, effectively acting as a learned “gate” that can scale down the importance of less relevant features before passing them to the next stage.</li>
+<li><strong><code>dropout(p=0.3)</code></strong>: A slightly higher dropout rate is applied after the gating mechanism for regularization.</li>
+</ul>
+</section>
+<section id="feature-extraction-block-2-384-256-features" class="level4">
+<h4 class="anchored" data-anchor-id="feature-extraction-block-2-384-256-features">3. Feature Extraction Block 2 (384 → 256 features)</h4>
+<p>This block further distills the features and introduces a “bounding” mechanism.</p>
+<ul>
+<li><strong><code>linear</code> &amp; <code>relu</code></strong>: The feature space is further reduced from 384 to 256 dimensions.</li>
+<li><strong><code>tanh</code> Activation</strong>: This activation function bounds the feature values to a range between -1 and 1. This “centering” of the data can help stabilize learning in the subsequent layers.</li>
+<li><strong><code>dropout(p=0.4)</code></strong>: The dropout rate is increased again. As the features become more abstract and complex, we can apply stronger regularization to ensure the model is learning generalizable patterns.</li>
+</ul>
+</section>
+<section id="classification-head-256-64-features" class="level4">
+<h4 class="anchored" data-anchor-id="classification-head-256-64-features">4. Classification Head (256 → 64 features)</h4>
+<p>This is the final stage of feature processing, where the network funnels the highly abstract features into a compact representation just before the final decision.</p>
+<ul>
+<li><strong>Two <code>linear</code> + <code>relu</code> Blocks</strong>: The feature space is decisively reduced from 256 to 128, and then to a final, compact set of 64 features.</li>
+<li><strong><code>dropout(p=0.3)</code></strong>: One last application of dropout provides final regularization before the output layer.</li>
+</ul>
+</section>
+<section id="output-layer-64-2-features" class="level4">
+<h4 class="anchored" data-anchor-id="output-layer-64-2-features">5. Output Layer (64 → 2 features)</h4>
+<p>This is the final decision-making layer of the model.</p>
+<ul>
+<li><strong><code>linear(64, 2)</code></strong>: This layer takes the final 64-feature vector and produces exactly two raw numbers (logits). Each number represents the model’s calculated score for one of the two classes (Class 1: No PE, Class 2: PE). These scores are then fed into the loss function during training and the <code>argmax</code> function during evaluation.</li>
+</ul>
+<hr>
+</section>
+</section>
+</section>
+<section id="model-training" class="level2">
+<h2 class="anchored" data-anchor-id="model-training">7. Model Training</h2>
+<p>This is where the learning occurs. We will feed the training data to our compiled model for a set number of “epochs” (passes through the data). After each epoch, we will check the model’s performance on our “test” set to monitor its progress.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">--- Starting Model Training ---</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+--- Starting Model Training ---</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Train the model using the training data.</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>fitted_scorch_model <span class="ot">&lt;-</span> compiled_scorch_model <span class="sc">|&gt;</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fit_scorch</span>(</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">loss =</span> nn_cross_entropy_loss,      <span class="co"># Standard loss function for multi-class classification.</span></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">num_epochs =</span> <span class="dv">25</span>,                   <span class="co"># Number of passes through the entire training data.</span></span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">verbose =</span> <span class="cn">TRUE</span>,                    <span class="co"># Print progress during training.</span></span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">validation_data =</span> <span class="fu">list</span>(x_test, y_test) <span class="co"># Monitor performance on the test set after each epoch.</span></span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>No GPU detected. Using available CPU.
+
+Epoch 1, Loss: 0.431193925063067 
+Epoch 2, Loss: 0.32838431123314 
+Epoch 3, Loss: 0.317293647818173 
+Epoch 4, Loss: 0.315845183556593 
+Epoch 5, Loss: 0.309203216263765 
+Epoch 6, Loss: 0.308239705577681 
+Epoch 7, Loss: 0.297556048801428 
+Epoch 8, Loss: 0.287551759541789 
+Epoch 9, Loss: 0.270920819968362 
+Epoch 10, Loss: 0.253011703868456 
+Epoch 11, Loss: 0.23902496488034 
+Epoch 12, Loss: 0.217798170126692 
+Epoch 13, Loss: 0.201841735009906 
+Epoch 14, Loss: 0.186559822268878 
+Epoch 15, Loss: 0.172051246219043 
+Epoch 16, Loss: 0.169809815249866 
+Epoch 17, Loss: 0.135144717661263 
+Epoch 18, Loss: 0.142456947342504 
+Epoch 19, Loss: 0.132030066621454 
+Epoch 20, Loss: 0.115117767189122 
+Epoch 21, Loss: 0.110214904893803 
+Epoch 22, Loss: 0.116595080546752 
+Epoch 23, Loss: 0.0882816925008274 
+Epoch 24, Loss: 0.0879059010480024 
+Epoch 25, Loss: 0.104283049726222 </code></pre>
+</div>
+</div>
+<section id="code-explanation-4" class="level4">
+<h4 class="anchored" data-anchor-id="code-explanation-4"><strong>Code Explanation</strong></h4>
+<ul>
+<li><p><strong><code>fit_scorch()</code></strong>: The main training function from the <code>scorcher</code> package.</p></li>
+<li><p><strong><code>loss = nn_cross_entropy_loss</code></strong>: We tell the model to use Cross-Entropy Loss, the standard and most effective loss function for classification tasks. The model’s goal is to minimize this value.</p></li>
+<li><p><strong><code>num_epochs</code></strong>: Defines the duration of the training. <code>25</code> is a reasonable number for this complex model.</p></li>
+<li><p><strong><code>validation_data</code></strong>: Providing this list causes <code>scorcher</code> to evaluate the model on our test set after each epoch, which is crucial for seeing if the model is truly learning or just memorizing.</p></li>
+</ul>
+<hr>
+</section>
+</section>
+<section id="final-evaluation" class="level2">
+<h2 class="anchored" data-anchor-id="final-evaluation">8. Final Evaluation</h2>
+<p>This is the final step. We take the fully trained model and evaluate its performance on the “validation” data that it has never seen before. This provides an unbiased assessment of our model’s predictive power.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">--- FINAL PERFORMANCE ON VALIDATION SET ---</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+--- FINAL PERFORMANCE ON VALIDATION SET ---</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Set model to evaluation mode and disable gradient calculation for efficiency.</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="fu">with_no_grad</span>({</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Get model predictions by calling the fitted model object directly on the validation data.</span></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>  predictions <span class="ot">&lt;-</span> <span class="fu">fitted_scorch_model</span>(x_val)</span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert model outputs (logits) to predicted class labels.</span></span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a><span class="co"># --- Convert Model Output to Class Predictions ---</span></span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a>predicted_classes <span class="ot">&lt;-</span> <span class="fu">as_array</span>(<span class="fu">torch_argmax</span>(predictions, <span class="at">dim =</span> <span class="dv">2</span>)) </span>
+<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-11"><a href="#cb27-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Get the actual labels (which are 1 and 2) for comparison.</span></span>
+<span id="cb27-12"><a href="#cb27-12" aria-hidden="true" tabindex="-1"></a>actual_classes <span class="ot">&lt;-</span> <span class="fu">as_array</span>(y_val)</span>
+<span id="cb27-13"><a href="#cb27-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-14"><a href="#cb27-14" aria-hidden="true" tabindex="-1"></a><span class="co"># --- Calculate Metrics from the Confusion Matrix ---</span></span>
+<span id="cb27-15"><a href="#cb27-15" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">--- Confusion Matrix ---</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+--- Confusion Matrix ---</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>confusion_matrix <span class="ot">&lt;-</span> <span class="fu">table</span>(<span class="at">Predicted =</span> predicted_classes, <span class="at">Actual =</span> actual_classes)</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(confusion_matrix)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>         Actual
+Predicted   1   2
+        1 451  41
+        2  37  10</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract the four components of the confusion matrix.</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="co"># We assume that Class '2' (original label '1') is the "positive" class.</span></span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>TP <span class="ot">&lt;-</span> confusion_matrix[<span class="dv">2</span>, <span class="dv">2</span>] <span class="co"># True Positives</span></span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>TN <span class="ot">&lt;-</span> confusion_matrix[<span class="dv">1</span>, <span class="dv">1</span>] <span class="co"># True Negatives</span></span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>FP <span class="ot">&lt;-</span> confusion_matrix[<span class="dv">2</span>, <span class="dv">1</span>] <span class="co"># False Positives</span></span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>FN <span class="ot">&lt;-</span> confusion_matrix[<span class="dv">1</span>, <span class="dv">2</span>] <span class="co"># False Negatives</span></span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate overall accuracy.</span></span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a>accuracy <span class="ot">&lt;-</span> <span class="fu">sum</span>(<span class="fu">diag</span>(confusion_matrix)) <span class="sc">/</span> <span class="fu">sum</span>(confusion_matrix)</span>
+<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate Sensitivity (Recall).</span></span>
+<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a>sensitivity <span class="ot">&lt;-</span> TP <span class="sc">/</span> (TP <span class="sc">+</span> FN)</span>
+<span id="cb31-12"><a href="#cb31-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate Specificity.</span></span>
+<span id="cb31-13"><a href="#cb31-13" aria-hidden="true" tabindex="-1"></a>specificity <span class="ot">&lt;-</span> TN <span class="sc">/</span> (TN <span class="sc">+</span> FP)</span>
+<span id="cb31-14"><a href="#cb31-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-15"><a href="#cb31-15" aria-hidden="true" tabindex="-1"></a><span class="co"># # --- AUROC Calculation ---</span></span>
+<span id="cb31-16"><a href="#cb31-16" aria-hidden="true" tabindex="-1"></a><span class="co"># # Convert raw model outputs (logits) to probabilities.</span></span>
+<span id="cb31-17"><a href="#cb31-17" aria-hidden="true" tabindex="-1"></a><span class="co"># probabilities &lt;- nnf_softmax(predictions, dim = 2)</span></span>
+<span id="cb31-18"><a href="#cb31-18" aria-hidden="true" tabindex="-1"></a><span class="co"># # We use the probability of the "positive" class (class 2), which is in the second column.</span></span>
+<span id="cb31-19"><a href="#cb31-19" aria-hidden="true" tabindex="-1"></a><span class="co"># scores_for_positive_class &lt;- vector(probabilities[, 2])</span></span>
+<span id="cb31-20"><a href="#cb31-20" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
+<span id="cb31-21"><a href="#cb31-21" aria-hidden="true" tabindex="-1"></a><span class="co"># # Create ROC curve object</span></span>
+<span id="cb31-22"><a href="#cb31-22" aria-hidden="true" tabindex="-1"></a><span class="co"># # Ensure actual_classes and scores_for_positive_class are R numeric vectors.</span></span>
+<span id="cb31-23"><a href="#cb31-23" aria-hidden="true" tabindex="-1"></a><span class="co"># roc_curve &lt;- roc(response = actual_classes,       # Should be 1s and 2s</span></span>
+<span id="cb31-24"><a href="#cb31-24" aria-hidden="true" tabindex="-1"></a><span class="co">#                  predictor = scores_for_positive_class, # Should be probabilities between 0 and 1</span></span>
+<span id="cb31-25"><a href="#cb31-25" aria-hidden="true" tabindex="-1"></a><span class="co">#                  levels = c(1, 2),                # Negative class = 1, Positive class = 2</span></span>
+<span id="cb31-26"><a href="#cb31-26" aria-hidden="true" tabindex="-1"></a><span class="co">#                  direction = "&lt;",                 # Predictor scores are higher for the positive class</span></span>
+<span id="cb31-27"><a href="#cb31-27" aria-hidden="true" tabindex="-1"></a><span class="co">#                  quiet = TRUE)</span></span>
+<span id="cb31-28"><a href="#cb31-28" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
+<span id="cb31-29"><a href="#cb31-29" aria-hidden="true" tabindex="-1"></a><span class="co"># # Calculate and print the AUROC</span></span>
+<span id="cb31-30"><a href="#cb31-30" aria-hidden="true" tabindex="-1"></a><span class="co"># auroc_value &lt;- auc(roc_curve)</span></span>
+<span id="cb31-31"><a href="#cb31-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-32"><a href="#cb31-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-33"><a href="#cb31-33" aria-hidden="true" tabindex="-1"></a><span class="co"># --- Final Summary of All Metrics ---</span></span>
+<span id="cb31-34"><a href="#cb31-34" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">--- Performance Summary ---</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+--- Performance Summary ---</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Validation Set Accuracy:"</span>, <span class="fu">round</span>(accuracy, <span class="dv">3</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Validation Set Accuracy: 0.855 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Sensitivity (Recall):"</span>, <span class="fu">round</span>(sensitivity, <span class="dv">3</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Sensitivity (Recall): 0.196 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Specificity:"</span>, <span class="fu">round</span>(specificity, <span class="dv">3</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Specificity: 0.924 </code></pre>
+</div>
+</div>
+<p>Thank you!</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp("https:\/\/your-pepci-website-url\.com");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

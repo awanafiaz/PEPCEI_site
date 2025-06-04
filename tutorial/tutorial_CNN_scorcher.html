@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.42">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Awan Afiaz">
+
+<title>Understanding Convolutional Neural Networks with scorcher and Internet Cats – PEPCEI</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../static/pepcei.png" rel="icon" type="image/png">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-6bd9cfa162949bde0a231f530c97869d.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../styles.css">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="../index.html" class="navbar-brand navbar-brand-logo">
+    <img src="../static/pepcei.png" alt="PEPCEI Logo" class="navbar-logo">
+    </a>
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">PEPCEI Project</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../project-description.html"> 
+<span class="menu-text">Project Description</span></a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-data-descriptions" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Data Descriptions</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-data-descriptions">    
+        <li>
+    <a class="dropdown-item" href="../data/cxr.html">
+ <span class="dropdown-text">CXR Data</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../data/ekg.html">
+ <span class="dropdown-text">EKG Data</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-result-presentation" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Result Presentation</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-result-presentation">    
+        <li>
+    <a class="dropdown-item" href="../results/PEPCI_CXR_only_CNN.html">
+ <span class="dropdown-text">CNN with CXR only</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../results/transformer.qmd">
+ <span class="dropdown-text">Transformer Models</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../results/other.qmd">
+ <span class="dropdown-text">Other Outputs</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link active" href="../tutorial/tutorial_CNN_scorcher.html" aria-current="page"> 
+<span class="menu-text">Scorcher Tutorial with Cats</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../about.html"> 
+<span class="menu-text">About Us</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#part-1-the-building-blocks---understanding-how-computers-see" id="toc-part-1-the-building-blocks---understanding-how-computers-see" class="nav-link active" data-scroll-target="#part-1-the-building-blocks---understanding-how-computers-see"><strong>Part 1: The Building Blocks - Understanding How Computers “See”</strong></a>
+  <ul class="collapse">
+  <li><a href="#part-2-scorcher---making-cnns-easy-in-r" id="toc-part-2-scorcher---making-cnns-easy-in-r" class="nav-link" data-scroll-target="#part-2-scorcher---making-cnns-easy-in-r"><strong>Part 2: <code>scorcher</code> - Making CNNs Easy in R</strong></a></li>
+  <li><a href="#part-3-alternative-approaches-and-deeper-intuition" id="toc-part-3-alternative-approaches-and-deeper-intuition" class="nav-link" data-scroll-target="#part-3-alternative-approaches-and-deeper-intuition"><strong>Part 3: Alternative Approaches and Deeper Intuition</strong></a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Understanding Convolutional Neural Networks with <code>scorcher</code> and Internet Cats</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Awan Afiaz </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>Breathe in, breathe out. We’re going to embark on a journey to understand a cool R package called <code>scorcher</code>. But before we dive into the code, we’ll start with the very basics of how a computer can “see” and “understand” images, which is the magic behind Convolutional Neural Networks (CNNs).</p>
+<section id="part-1-the-building-blocks---understanding-how-computers-see" class="level2">
+<h2 class="anchored" data-anchor-id="part-1-the-building-blocks---understanding-how-computers-see"><strong>Part 1: The Building Blocks - Understanding How Computers “See”</strong></h2>
+<p>Imagine you’re teaching a child to recognize a cat. You wouldn’t just show them one picture and expect them to get it right every time. You’d show them many different cats: big ones, small ones, fluffy ones, sleeping ones, and so on. In a way, this is how we train a computer.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://i.etsystatic.com/54504012/r/il/646bcd/6318011128/il_1588xN.6318011128_etn5.jpg" class="img-fluid figure-img"></p>
+<figcaption>Different types of cats on the internet</figcaption>
+</figure>
+</div>
+<p>A <strong>Convolutional Neural Network (CNN)</strong> is a type of computer program designed to recognize patterns in images. Think of it as a series of filters and transformations that help the computer focus on the important features of an image, just like you might point out a cat’s pointy ears or long whiskers to a child.</p>
+<hr>
+<section id="whats-in-a-picture-pixels" class="level4">
+<h4 class="anchored" data-anchor-id="whats-in-a-picture-pixels"><strong>What’s in a Picture? Pixels!</strong></h4>
+<p>To a computer, an image is just a grid of numbers. Each number represents the color of a tiny dot called a <strong>pixel</strong>. For a simple black and white image, a pixel might be 0 for black, 255 for white, and shades of gray in between. For a color image, each pixel would have three numbers representing the amount of red, green, and blue (RGB).</p>
+<p>Our goal is to teach the computer to look at this grid of numbers and say, “That’s a ‘7’!” or “That’s a cat!”.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://npr.brightspotcdn.com/dims3/default/strip/false/crop/2121x1414+0+0/resize/1600/quality/85/format/webp/?url=http%3A%2F%2Fnpr-brightspot.s3.amazonaws.com%2F93%2F92%2F59e65a7a473bb61b3f5bb0447504%2Fgettyimages-937778210.jpg" class="img-fluid figure-img"></p>
+<figcaption>That’s a cat!</figcaption>
+</figure>
+</div>
+<hr>
+</section>
+<section id="the-core-idea-convolutions" class="level4">
+<h4 class="anchored" data-anchor-id="the-core-idea-convolutions"><strong>The Core Idea: Convolutions</strong></h4>
+<p>This is the “C” in CNN and the most important concept to grasp. A <strong>convolution</strong> is a fancy word for applying a filter to an image. But what is a filter?</p>
+<p>Imagine you have a tiny magnifying glass that can only see a small 3x3 square of pixels at a time. This magnifying glass has a special pattern on it. Maybe it’s designed to light up when it sees a vertical edge. This special magnifying glass is our <strong>filter</strong> (also called a <strong>kernel</strong>).</p>
+<p>Here’s how it works:</p>
+<ol type="1">
+<li><p><strong>Slide:</strong> We take our filter and slide it over every single 3x3 patch of our image, from left to right, top to bottom.</p></li>
+<li><p><strong>Calculate:</strong> At each position, we do some simple math. We multiply the numbers in our filter by the pixel values in the image patch underneath it and then add them all up.</p></li>
+<li><p><strong>Create a Feature Map:</strong> The result of this calculation for each position gives us a new grid of numbers. This new grid is called a <strong>feature map</strong>. This map highlights where the feature our filter was looking for (like a vertical edge) appeared in the original image.</p></li>
+</ol>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://anhreynolds.com/img/cnn.png" class="img-fluid figure-img"></p>
+<figcaption>Convolution steps</figcaption>
+</figure>
+</div>
+<p>We can have many different filters, each looking for a different simple feature:</p>
+<ul>
+<li><p>A filter for horizontal edges.</p></li>
+<li><p>A filter for diagonal edges.</p></li>
+<li><p>A filter for curves.</p></li>
+</ul>
+<p>By applying several of these filters, we get a stack of feature maps, each one telling us about the presence of a different basic shape in the image.</p>
+<hr>
+</section>
+<section id="making-sense-of-the-features-relu-and-pooling" class="level4">
+<h4 class="anchored" data-anchor-id="making-sense-of-the-features-relu-and-pooling"><strong>Making Sense of the Features: ReLU and Pooling</strong></h4>
+<p>After the convolution, our CNN does a couple more things to process the information.</p>
+<ul>
+<li><strong>ReLU (Rectified Linear Unit):</strong> This sounds complicated, but it’s super simple. It’s an “activation function” that goes through our feature map and changes all the negative numbers to zero. Think of it as enhancing the important features (the positive numbers) and getting rid of the noise (the negative numbers).</li>
+</ul>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://cdn-images-1.medium.com/max/1760/1*jMIanLU4EtqAdomgp0dC8w.png" class="img-fluid figure-img"></p>
+<figcaption>RELU</figcaption>
+</figure>
+</div>
+<ul>
+<li><strong>Pooling:</strong> Our feature maps can be quite large. To make them more manageable and to focus on the most important information, we use <strong>pooling</strong>. The most common type is <strong>max pooling</strong>. Here’s how it works:
+<ol type="1">
+<li>We take a small window (say, 2x2 pixels) of our feature map.</li>
+<li>We find the largest number within that window.</li>
+<li>We keep only that largest number and discard the rest.</li>
+<li>We slide our window across the entire feature map, creating a new, smaller feature map.</li>
+</ol></li>
+</ul>
+<p>This process effectively summarizes the features in a region. It makes our network more robust because even if a feature moves slightly in the image, the pooled feature map will likely still capture its presence.</p>
+<hr>
+</section>
+<section id="putting-it-all-together-the-cnn-architecture" class="level4">
+<h4 class="anchored" data-anchor-id="putting-it-all-together-the-cnn-architecture"><strong>Putting It All Together: The CNN Architecture</strong></h4>
+<p>A typical CNN is a sequence of these layers:</p>
+<ol type="1">
+<li><strong>Convolution Layer:</strong> Applies filters to the input image to create feature maps.</li>
+<li><strong>ReLU Layer:</strong> Activates the features.</li>
+<li><strong>Pooling Layer:</strong> Downsamples the feature maps to make them smaller and more focused.</li>
+</ol>
+<p>We can stack these sets of layers multiple times. The early layers learn to recognize simple features like edges and corners. The later layers combine these simple features to learn more complex patterns, like eyes, noses, or the shape of a number.</p>
+<p>Finally, at the very end of the network, we have a “fully connected layer” that takes the high-level features and makes the final prediction: “This is a cat with 98% confidence.”</p>
+<p><img src="https://img.freepik.com/free-vector/funny-serious-cat-animal-meme_23-2148974916.jpg" class="img-fluid"></p>
+<hr>
+</section>
+<section id="part-2-scorcher---making-cnns-easy-in-r" class="level3">
+<h3 class="anchored" data-anchor-id="part-2-scorcher---making-cnns-easy-in-r"><strong>Part 2: <code>scorcher</code> - Making CNNs Easy in R</strong></h3>
+<p>Now that we have a feel for what a CNN is doing under the hood, let’s look at the <code>scorcher</code> package. <code>scorcher</code> is an R package that makes it easier to build and train these complex networks without getting bogged down in the nitty-gritty details. It acts as a friendly interface to a powerful deep learning library called <code>torch</code>.</p>
+<p>Let’s break down the MNIST example step-by-step.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># First, you'd need to install the package from GitHub</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co"># install.packages("pak")</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co"># pak::pak("jtleek/scorcher")</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<hr>
+<section id="the-goal-classifying-handwritten-digits" class="level4">
+<h4 class="anchored" data-anchor-id="the-goal-classifying-handwritten-digits"><strong>The Goal: Classifying Handwritten Digits</strong></h4>
+<p>The example in the <code>scorcher</code> uses the famous <strong>MNIST dataset</strong>. This is a collection of 70,000 small, black and white images of handwritten digits (0 through 9). The goal is to build a CNN that can look at one of these images and correctly guess which digit it is.</p>
+<hr>
+</section>
+<section id="step-1-preparing-the-data" class="level4">
+<h4 class="anchored" data-anchor-id="step-1-preparing-the-data"><strong>Step 1: Preparing the Data</strong></h4>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(scorcher)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(torch)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(torchvision)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Training Data</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>train_data <span class="ot">&lt;-</span> <span class="fu">mnist_dataset</span>(</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">root =</span> <span class="fu">tempdir</span>(),</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">download =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">transform =</span> transform_to_tensor</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>x_train <span class="ot">&lt;-</span> <span class="fu">torch_tensor</span>(train_data<span class="sc">$</span>data, <span class="at">dtype =</span> <span class="fu">torch_float</span>()) <span class="sc">|&gt;</span> <span class="fu">torch_unsqueeze</span>(<span class="dv">2</span>)</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>y_train <span class="ot">&lt;-</span> <span class="fu">torch_tensor</span>(train_data<span class="sc">$</span>targets, <span class="at">dtype =</span> <span class="fu">torch_long</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ul>
+<li><strong><code>library(torch)</code> and <code>library(torchvision)</code>:</strong> We load the necessary libraries. <code>torch</code> is the core deep learning engine, and <code>torchvision</code> provides easy access to common datasets like MNIST and tools for working with images.</li>
+<li><strong><code>mnist_dataset(...)</code>:</strong> This function downloads the MNIST dataset to a temporary directory (<code>tempdir()</code>) if you don’t already have it.</li>
+<li><strong><code>transform = transform_to_tensor</code>:</strong> This is a crucial step. It tells R to convert the images from their standard format into <strong>tensors</strong>. A tensor is the fundamental data structure in <code>torch</code>. Think of it as a multi-dimensional array or matrix that’s optimized for the kind of math we do in deep learning.</li>
+<li><strong><code>x_train</code> and <code>y_train</code>:</strong> We separate our data into two parts:
+<ul>
+<li><code>x_train</code>: These are the images themselves (the input). We convert them to <code>torch</code> tensors of floating-point numbers. The <code>torch_unsqueeze(2)</code> part adds an extra dimension to our data, which is needed for the convolutional layers to know that we’re dealing with grayscale images (which have one color channel).</li>
+<li><code>y_train</code>: These are the <strong>labels</strong> for each image (the correct answers). For each image in <code>x_train</code>, there’s a corresponding number in <code>y_train</code> that tells us what digit it is.</li>
+</ul></li>
+</ul>
+<hr>
+</section>
+<section id="step-2-creating-a-data-loader" class="level4">
+<h4 class="anchored" data-anchor-id="step-2-creating-a-data-loader"><strong>Step 2: Creating a Data Loader</strong></h4>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create the Dataloader</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>dl <span class="ot">&lt;-</span> <span class="fu">scorch_create_dataloader</span>(x_train, y_train, <span class="at">batch_size =</span> <span class="dv">500</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ul>
+<li><strong><code>scorch_create_dataloader(...)</code>:</strong> When we train a neural network, it’s often too slow to show it all 60,000 training images at once. Instead, we show it smaller <strong>batches</strong> of images. This <code>dataloader</code> is a handy tool that takes our training data and prepares it to be fed to our model in these batches.</li>
+<li><strong><code>batch_size = 500</code>:</strong> This tells the dataloader to give our model 500 images at a time. The model will look at these 500 images, make its predictions, see how well it did, and then learn from its mistakes before moving on to the next batch of 500.</li>
+</ul>
+<hr>
+</section>
+<section id="step-3-defining-the-neural-network-with-scorcher" class="level4">
+<h4 class="anchored" data-anchor-id="step-3-defining-the-neural-network-with-scorcher"><strong>Step 3: Defining the Neural Network with <code>scorcher</code></strong></h4>
+<p>This is where the magic of <code>scorcher</code> really shines. We define our entire CNN architecture using a clean, readable pipeline.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Define the Neural Network</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>scorch_model <span class="ot">&lt;-</span> dl <span class="sc">|&gt;</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">initiate_scorch</span>() <span class="sc">|&gt;</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scorch_layer</span>(<span class="st">"conv2d"</span>, <span class="at">in_channels =</span> <span class="dv">1</span>, <span class="at">out_channels =</span> <span class="dv">32</span>, <span class="at">kernel_size =</span> <span class="dv">3</span>) <span class="sc">|&gt;</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scorch_layer</span>(<span class="st">"relu"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scorch_layer</span>(<span class="st">"conv2d"</span>, <span class="at">in_channels =</span> <span class="dv">32</span>, <span class="at">out_channels =</span> <span class="dv">64</span>, <span class="at">kernel_size =</span> <span class="dv">3</span>) <span class="sc">|&gt;</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scorch_layer</span>(<span class="st">"relu"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scorch_layer</span>(<span class="st">"max_pool2d"</span>, <span class="at">kernel_size =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Let’s break this down layer by layer:</p>
+<ul>
+<li><strong><code>initiate_scorch()</code>:</strong> This starts the process of building our model.</li>
+<li><strong><code>scorch_layer("conv2d", ...)</code>:</strong> This adds our first <strong>2D convolutional layer</strong>.
+<ul>
+<li><code>in_channels = 1</code>: This tells the layer that our input images have one color channel (because they are grayscale).</li>
+<li><code>out_channels = 32</code>: This means we want this layer to learn <strong>32 different filters</strong>. It will produce 32 feature maps.</li>
+<li><code>kernel_size = 3</code>: This specifies that each filter will be a 3x3 square.</li>
+</ul></li>
+<li><strong><code>scorch_layer("relu")</code>:</strong> This adds the ReLU activation function we talked about earlier.</li>
+<li><strong><code>scorch_layer("conv2d", ...)</code>:</strong> This is our second convolutional layer.
+<ul>
+<li><code>in_channels = 32</code>: The input to this layer is the output of the previous one, which had 32 channels (our 32 feature maps).</li>
+<li><code>out_channels = 64</code>: This layer will learn even more complex features, creating 64 new feature maps.</li>
+</ul></li>
+<li><strong><code>scorch_layer("relu")</code>:</strong> Another ReLU activation.</li>
+<li><strong><code>scorch_layer("max_pool2d", kernel_size = 2)</code>:</strong> This adds a max pooling layer with a 2x2 window to downsample our feature maps.</li>
+</ul>
+<p>Behind the scenes, <code>scorcher</code> will automatically add the final layers needed to take these feature maps and produce a prediction for our 10 digit classes (0-9).</p>
+<hr>
+</section>
+<section id="step-4-compiling-the-model" class="level4">
+<h4 class="anchored" data-anchor-id="step-4-compiling-the-model"><strong>Step 4: Compiling the Model</strong></h4>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Compile the Neural Network</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>compiled_scorch_model <span class="ot">&lt;-</span> <span class="fu">compile_scorch</span>(scorch_model)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="sc">$</span>nn_model</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>An <span class="st">`</span><span class="at">nn_module</span><span class="st">`</span> containing <span class="dv">1</span>,<span class="dv">199</span>,<span class="dv">882</span> parameters.</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>── Modules ─────────────────────────────────────────────────────────────────────────────────────</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>• modules<span class="sc">:</span> <span class="er">&lt;</span>nn_module_list<span class="sc">&gt;</span> <span class="co">#1,199,882 parameters</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="er">$</span>dl</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>This is a dataloader object with features<span class="sc">:</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a> <span class="er">*</span> Batch size<span class="sc">:</span> <span class="dv">500</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a> <span class="sc">*</span> Number of batches<span class="sc">:</span> <span class="dv">120</span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a> <span class="sc">*</span> Dimension of input tensors<span class="sc">:</span> <span class="dv">1</span> <span class="dv">28</span> <span class="dv">28</span></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a> <span class="sc">*</span> Dimension of output tensors<span class="sc">:</span> <span class="dv">1</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ul>
+<li><strong><code>compile_scorch(...)</code>:</strong> This function takes our model definition and gets it ready for training. It does some important setup work, like figuring out the exact dimensions of the data as it flows through the layers.</li>
+</ul>
+<hr>
+</section>
+<section id="step-5-training-the-model" class="level4">
+<h4 class="anchored" data-anchor-id="step-5-training-the-model"><strong>Step 5: Training the Model</strong></h4>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co">#-- Training the Neural Network</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>fitted_scorch_model <span class="ot">&lt;-</span> compiled_scorch_model <span class="sc">|&gt;</span> </span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fit_scorch</span>(<span class="at">loss =</span> nn_cross_entropy_loss, <span class="at">num_epochs =</span> <span class="dv">10</span>, <span class="at">verbose =</span> T)</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; No GPU detected. Using available CPU.</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Epoch 1, Loss: 2.02356864586473 </span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Epoch 2, Loss: 0.0940264421204726 </span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Epoch 3, Loss: 0.0601395909674466 </span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Epoch 4, Loss: 0.0492425365373492 </span></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Epoch 5, Loss: 0.0394406393170357 </span></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Epoch 6, Loss: 0.0305162566791599 </span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Epoch 7, Loss: 0.0269935902828972 </span></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Epoch 8, Loss: 0.0224211714424503 </span></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Epoch 9, Loss: 0.0192102687200531 </span></span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Epoch 10, Loss: 0.0172218276983282</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ul>
+<li><strong><code>fit_scorch(...)</code>:</strong> This is the command that actually starts the training process.</li>
+<li><strong><code>loss = nn_cross_entropy_loss</code>:</strong> A <strong>loss function</strong> is a way of measuring how wrong our model’s predictions are. <code>nn_cross_entropy_loss</code> is a standard and effective loss function for classification problems like this one. During training, the model will try to adjust its internal parameters (the patterns in its filters) to make the value of this loss function as low as possible.</li>
+<li><strong><code>num_epochs = 10</code>:</strong> An <strong>epoch</strong> is one full pass through the entire training dataset. Here, we’re telling the model to go through all the training images 10 times.</li>
+<li><strong><code>verbose = T</code>:</strong> This tells the function to print out progress updates as it trains, so we can see the loss going down with each epoch.</li>
+</ul>
+<p>The output you see shows the loss decreasing over the 10 epochs, which means our model is getting better and better at classifying the digits!</p>
+<hr>
+</section>
+</section>
+<section id="part-3-alternative-approaches-and-deeper-intuition" class="level3">
+<h3 class="anchored" data-anchor-id="part-3-alternative-approaches-and-deeper-intuition"><strong>Part 3: Alternative Approaches and Deeper Intuition</strong></h3>
+<p>Let’s play with the <code>scorcher</code> model to build a more intuitive understanding.</p>
+<section id="what-if-we-use-fewer-filters" class="level4">
+<h4 class="anchored" data-anchor-id="what-if-we-use-fewer-filters"><strong>What if we use fewer filters?</strong></h4>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># A simpler model</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>simpler_model <span class="ot">&lt;-</span> dl <span class="sc">|&gt;</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">initiate_scorch</span>() <span class="sc">|&gt;</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scorch_layer</span>(<span class="st">"conv2d"</span>, <span class="at">in_channels =</span> <span class="dv">1</span>, <span class="at">out_channels =</span> <span class="dv">8</span>, <span class="at">kernel_size =</span> <span class="dv">3</span>) <span class="sc">|&gt;</span> <span class="co"># Only 8 filters</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scorch_layer</span>(<span class="st">"relu"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scorch_layer</span>(<span class="st">"max_pool2d"</span>, <span class="at">kernel_size =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>In this version, the first convolutional layer only learns 8 filters instead of 32. This model would be faster to train but might not be as accurate because it’s not learning as many different features from the images. It has a less nuanced “vocabulary” of shapes to look for.</p>
+</section>
+<section id="what-if-we-use-larger-filters" class="level4">
+<h4 class="anchored" data-anchor-id="what-if-we-use-larger-filters"><strong>What if we use larger filters?</strong></h4>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># A model with larger filters</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>larger_filter_model <span class="ot">&lt;-</span> dl <span class="sc">|&gt;</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">initiate_scorch</span>() <span class="sc">|&gt;</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scorch_layer</span>(<span class="st">"conv2d"</span>, <span class="at">in_channels =</span> <span class="dv">1</span>, <span class="at">out_channels =</span> <span class="dv">32</span>, <span class="at">kernel_size =</span> <span class="dv">5</span>) <span class="sc">|&gt;</span> <span class="co"># 5x5 filters</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scorch_layer</span>(<span class="st">"relu"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scorch_layer</span>(<span class="st">"max_pool2d"</span>, <span class="at">kernel_size =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Here, we’re using 5x5 filters. A larger filter can capture more complex patterns in a single step but is also computationally more expensive. The choice of filter size is a trade-off between capturing detail and computational efficiency.</p>
+<p>By experimenting with these parameters, you can start to see how different choices in the CNN architecture affect the model’s ability to learn and its final performance. The <code>scorcher</code> package makes this kind of experimentation incredibly straightforward and accessible, even for those who are new to the world of deep learning.</p>
+
+
+</section>
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp("https:\/\/your-pepci-website-url\.com");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

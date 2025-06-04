@@ -1,0 +1,33 @@
+/* styles.css */
+
+/* Example: Custom body font */
+/*
+body {
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+*/
+
+/* Example: Navbar logo styling */
+.navbar-brand img {
+  max-height: 35px; /* Adjust as needed */
+  margin-right: 8px;
+}
+
+/* Example: Card image styling for team members */
+.about-team .card .card-img-top {
+  width: 100%;
+  /* max-height: 220px; /* Or specific height */
+  /* aspect-ratio: 1 / 1; /* For square images */
+  object-fit: cover;
+  border-bottom: 1px solid #eee;
+}
+
+/* Example: Specific styling for hero images if used in YAML */
+/*
+.quarto-title-block-image {
+  max-height: 400px;
+  object-fit: cover;
+}
+*/
+
+/* Add any other custom styles your PEPCI website might need */
